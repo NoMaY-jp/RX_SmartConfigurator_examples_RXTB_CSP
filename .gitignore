@@ -1,0 +1,5 @@
+# Ignore build results and unnecessary setting/working files by/for CS+
+DefaultBuild/
+*.*.mtud
+*.rcpe
+*.mtls

@@ -1,0 +1,74 @@
+/***********************************************************************************************************************
+* DISCLAIMER
+* This software is supplied by Renesas Electronics Corporation and is only intended for use with Renesas products.
+* No other uses are authorized. This software is owned by Renesas Electronics Corporation and is protected under all
+* applicable laws, including copyright laws. 
+* THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIESREGARDING THIS SOFTWARE, WHETHER EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NON-INFRINGEMENT.  ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIMED.TO THE MAXIMUM EXTENT PERMITTED NOT PROHIBITED BY
+* LAW, NEITHER RENESAS ELECTRONICS CORPORATION NOR ANY OF ITS AFFILIATED COMPANIES SHALL BE LIABLE FOR ANY DIRECT,
+* INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR ANY REASON RELATED TO THIS SOFTWARE, EVEN IF RENESAS OR
+* ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+* Renesas reserves the right, without notice, to make changes to this software and to discontinue the availability 
+* of this software. By using this software, you agree to the additional terms and conditions found by accessing the 
+* following link:
+* http://www.renesas.com/disclaimer
+*
+* Copyright (C) 2016, 2017 Renesas Electronics Corporation. All rights reserved.
+***********************************************************************************************************************/
+
+/***********************************************************************************************************************
+* Project      : Tutorial
+*
+* History      : DD.MM.YYYY Version      Description
+*              : 27.09.2017 Ver. 1.00    First Release
+***********************************************************************************************************************/
+
+/***********************************************************************************************************************
+* File Name    : description.txt
+*
+* System Requirements: 
+* Device(s)               : R5F565NEDDFP 
+* Tool-Chain              : CC-RX V2.07.00
+* Development environment : Renesas e2 studio
+* Version                 : Renesas Smart Configurator V1.2.0
+* H/W Platform            : Target Board for RX65N
+*
+* Description  : The function of this program selects either the user switch
+*                interrupt or the timer interrupt according to the mode
+*                selection at startup and controls the lighting of the LED by
+*                using the interrupt.
+*
+* Note         : Smart Configurator is used to generate code for this sample program. 
+*                The Smart Configurator details and version number are given in the file 
+*                header for each relevant module.
+*
+* Operating Procedure:  
+*                After resetting with the power-on reset or RES # pin, it detects whether
+*                the user switch is pressed and switches the start mode. If you reset while
+*                holding down the user switch, it transits to manual mode, and if you reset
+*                without pressing the user switch it will transition to automatic mode.
+*
+*                Timer interrupt function (Auto-mode) 
+*                After switching to the automatic mode, set the timer interrupt and control
+*                the LED by timer interrupt. The setting list of the timer interrupt function
+*                and the processing contents are shown below
+*
+*                 Timer: CMT0
+*                 Counter clock: PCLKB / 512
+*                 Interrupt interval: 500 ms
+*                 Interrupt level: Level 15
+*                 Interrupt class: CMI 0
+*                 Interrupt processing content: LED 0, LED 1 are alternately turned on and oft
+*                
+*                User switch interrupt function (Manual-mode)
+*                After manual mode transition, this function is enabled. The setting list and
+*                processing contents of the user switch interrupt function are shown below.
+*
+*                 Interrupt: IRQ 4
+*                 Detection type: Falling edge (corresponding to user switch press)
+*                 Interrupt level: Level 15
+*                 Digital filter: Enable (PCLKB / 64)
+*                 Interrupt processing content: LED 0, LED 1 are alternately turned on and off
+*
+***********************************************************************************************************************/
