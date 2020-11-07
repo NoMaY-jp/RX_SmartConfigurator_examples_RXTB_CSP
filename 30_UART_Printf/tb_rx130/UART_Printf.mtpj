@@ -983,6 +983,7 @@
       <COptionControlFlowIntegrity-0>None</COptionControlFlowIntegrity-0>
       <COptionDebug-0>True</COptionDebug-0>
       <COptionInclude-0>src\smc_gen\Config_SCI1
+src\smc_gen\Config_PORT
 src\smc_gen\r_pincfg
 src\smc_gen\r_config
 src\smc_gen\r_bsp\mcu\rx130\register_access\ccrx
@@ -992,7 +993,6 @@ src\smc_gen\r_bsp\board\user
 src\smc_gen\r_bsp\board\generic_rx130
 src\smc_gen\r_bsp
 src\smc_gen\general
-src\smc_gen\Config_PORT
 src
 </COptionInclude-0>
       <COptionMisra2004RuleFile-0 />
@@ -1013,6 +1013,8 @@ src
       <COptionShowExpansions-0>False</COptionShowExpansions-0>
       <COptionCommandLine-0>-isa=rxv1
 -nofpu
+-include=src\smc_gen\Config_SCI1
+-include=src\smc_gen\Config_PORT
 -include=src\smc_gen\r_pincfg
 -include=src\smc_gen\r_config
 -include=src\smc_gen\r_bsp\mcu\rx130\register_access\ccrx
@@ -1022,7 +1024,6 @@ src
 -include=src\smc_gen\r_bsp\board\generic_rx130
 -include=src\smc_gen\r_bsp
 -include=src\smc_gen\general
--include=src\smc_gen\Config_PORT
 -include=src
 -nomessage=21644,20010,23034,23035,20177,23033
 -utf8
@@ -2824,7 +2825,7 @@ D_1=R_1
       <GenerateFileFolder>C:\Renesas\FreeRTOS\Demo\RX100_RX130_TB_Renesas_e2studio_CS+</GenerateFileFolder>
       <SmcExePath>C:\Renesas\SmartConfigurator\RX\eclipse\SmartConfigurator.exe</SmcExePath>
       <CodeGeneratorFilesGuid>3da029ce-f32f-4b28-a2b1-2e15c31ead31</CodeGeneratorFilesGuid>
-      <SCFGFile>UART_Printf.scfg</SCFGFile>
+      <SCFGFile>SmartConfigurator.scfg</SCFGFile>
     </Instance>
   </Class>
   <Class Guid="2a2c2a43-ecdb-4e88-80bd-e75f3e33db90">

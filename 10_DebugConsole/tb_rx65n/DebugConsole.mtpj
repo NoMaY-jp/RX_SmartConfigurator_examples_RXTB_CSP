@@ -975,7 +975,8 @@
       <COptionXcref-0>False</COptionXcref-0>
       <COptionControlFlowIntegrity-0>None</COptionControlFlowIntegrity-0>
       <COptionDebug-0>True</COptionDebug-0>
-      <COptionInclude-0>src\smc_gen\r_pincfg
+      <COptionInclude-0>src\smc_gen\Config_PORT
+src\smc_gen\r_pincfg
 src\smc_gen\r_config
 src\smc_gen\r_bsp\mcu\rx65n\register_access\ccrx
 src\smc_gen\r_bsp\mcu\rx65n
@@ -984,7 +985,6 @@ src\smc_gen\r_bsp\board\user
 src\smc_gen\r_bsp\board\generic_rx65n
 src\smc_gen\r_bsp
 src\smc_gen\general
-src\smc_gen\Config_PORT
 src
 </COptionInclude-0>
       <COptionMisra2004RuleFile-0 />
@@ -1005,6 +1005,7 @@ src
       <COptionShowExpansions-0>False</COptionShowExpansions-0>
       <COptionCommandLine-0>-isa=rxv2
 -fpu
+-include=src\smc_gen\Config_PORT
 -include=src\smc_gen\r_pincfg
 -include=src\smc_gen\r_config
 -include=src\smc_gen\r_bsp\mcu\rx65n\register_access\ccrx
@@ -1014,7 +1015,6 @@ src
 -include=src\smc_gen\r_bsp\board\generic_rx65n
 -include=src\smc_gen\r_bsp
 -include=src\smc_gen\general
--include=src\smc_gen\Config_PORT
 -include=src
 -nomessage=21644,20010,23034,23035,20177,23033
 -utf8
@@ -2850,26 +2850,15 @@ D_1=R_1
   </Class>
   <Class Guid="90536345-15c8-40cb-957c-e59974e4bf78">
     <Instance Guid="90536345-15c8-40cb-957c-e59974e4bf78">
-      <GenerateFileFolder>C:\Renesas\GitHubDesktop\work\RXTB\SMC_RDP_Demo\1_DebugConsole\RX600_RX65N_TB_Renesas_e2studio_CS+</GenerateFileFolder>
+      <GenerateFileFolder>C:\Renesas\FreeRTOS\Demo\RX600_RX65N_TB_Renesas_e2studio_CS+</GenerateFileFolder>
       <SmcExePath>C:\Renesas\SmartConfigurator\RX\eclipse\SmartConfigurator.exe</SmcExePath>
       <CodeGeneratorFilesGuid>3da029ce-f32f-4b28-a2b1-2e15c31ead31</CodeGeneratorFilesGuid>
-      <SCFGFile>DebugConsole.scfg</SCFGFile>
-    </Instance>
-  </Class>
-  <Class Guid="78a5c5cd-76cb-4bcc-a031-3020011fbc9a">
-    <Instance Guid="09a6ca83-00c4-4904-a7d0-c09333730bae">
-      <MemoCount>0</MemoCount>
-    </Instance>
-    <Instance Guid="4f6b2757-75d8-443b-a2aa-2dfbd38bd9b2">
-      <MemoCount>0</MemoCount>
-    </Instance>
-    <Instance Guid="3fba3dcc-863a-452d-92b8-eeade6ea1449">
-      <MemoCount>0</MemoCount>
+      <SCFGFile>SmartConfigurator.scfg</SCFGFile>
     </Instance>
   </Class>
   <Class Guid="2a2c2a43-ecdb-4e88-80bd-e75f3e33db90">
     <Instance Guid="2a2c2a43-ecdb-4e88-80bd-e75f3e33db90">
-      <ProductVersion>8.01.00.00</ProductVersion>
+      <ProductVersion>9.04.00.00</ProductVersion>
     </Instance>
   </Class>
 </CubeSuiteProject>
