@@ -1,0 +1,119 @@
+************************************************************************************************************************************************************************************************************************
+DESCRIPTION        Renesas Target Boardfor RX130 Project Readme File                                                                                                                                                    
+************************************************************************************************************************************************************************************************************************
+
+************************************************************************************************************************************************************************************************************************
+* History         : 27.09.2017 Ver. 1.00 First Release                                                                                                                                                                  
+************************************************************************************************************************************************************************************************************************
+
+Online Support and Technical Contact Details:
+    Please refer to the contact details within the Users Manual.
+    Some connections listed may be dependant upon option link settings on the board.
+    Please refer to the hardware manual and schematics available in the product or on the web site for details.
+
+/*    Target Board for RX130 - Board / Connector Cross Reference    */
+Device = R5F51308ADFP
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Pin   Port                                                                                                        Jx                                                                                             
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1     P06                                                                                                         J1-1
+2     P03/DA0                                                                                                     J1-2
+3     P04                                                                                                         J1-3
+4     PJ3/MTIOC3C/CTS6#/RTS6#/SS6#                                                                                J1-4
+5     VCL
+6     PJ1/MTIOC3A                                                                                                 J1-6
+7     MD/FINED                                                                                                    J1-7
+8     XCIN
+9     XCOUT
+10    RES#                                                                                                        J1-10
+11    XTAL/P37                                                                                                    J1-11
+12    VSS                                                                                                         J1-12
+13    EXTAL/P36                                                                                                   J1-13
+14    VCC                                                                                                         J1-14
+15    P35/NMI                                                                                                     J1-15
+16    P34/MTIOC0A/TMCI3/POE2#/SCK6/IRQ4                                                                           J1-16
+17    P33/MTIOC0D/TMRI3/POE3#/RXD6/SMISO6/SSCL6/IRQ3                                                              J1-17
+18    P32/MTIOC0C/TMO3/TXD6/SMOSI6/SSDA6/TS0/IRQ2/RTCOUT                                                          J1-18
+19    P31/MTIOC4D/TMCI2/CTS1#/RTS1#/SS1#/TS1/IRQ1                                                                 J1-19
+20    P30/MTIOC4B/TMRI3/POE8#/RXD1/SMISO1/SSCL1/TS2/IRQ0                                                          J1-20
+21    P27/MTIOC2B/TMCI3/SCK1/TS3                                                                                  J1-21
+22    P26/MTIOC2A/TMO1/TXD1/SMOSI1/SSDA1/TS4                                                                      J1-22
+23    P25/MTIOC4C/MTCLKB/ADTRG0#                                                                                  J1-23
+24    P24/MTIOC4A/MTCLKA//TMRI1                                                                                   J1-24
+25    P23/MTIOC3D/MTCLKD/CTS0#/RTS0#/SS0#                                                                         J1-25
+26    P22/MTIOC3B/MTCLKC/TMO0/SCK0                                                                                J1-26
+27    P21/MTIOC1B/TMCI0/RXD0/SMISO0/SSCL0                                                                         J1-27
+28    P20/MTIOC1A/TMRI0/TXD0/SMOSI0/SSDA0                                                                         J1-28
+29    P17/MTIOC3A/MTIOC3B/TMO1/ POE8#/SCK1/MISOA/SDA/IRQ7                                                         J1-29
+30    P16/MTIOC3C/MTIOC3D/TMO2/TXD1/SMOSI1/SSDA1/MOSIA/SCL/IRQ6/ ADTRG0#/RTCOUT                                   J1-30
+31    P15/MTIOC0B/MTCLKB/TMCI2/RXD1/SMISO1/SSCL1/TS5/IRQ5                                                         J1-31
+32    P14/MTIOC3A/MTCLKA/TMRI2/CTS1#/RTS1#/SS1#/TS6/IRQ4                                                          J1-32
+33    P13/MTIOC0B/TMO3/SDA/IRQ3                                                                                   J1-33
+34    P12/TMCI1/SCL/IRQ2                                                                                          J1-34
+35    PH3/TMCI0/TS7                                                                                               J1-35
+36    PH2/TMRI0/TS8/IRQ1                                                                                          J1-36
+37    PH1/TMO0/TS9/IRQ0                                                                                           J1-37
+38    PH0/TS10/CACREF                                                                                             J1-38
+39    P55/MTIOC4D/TMO3/TS11                                                                                       J1-39
+40    P54/MTIOC4B/TMCI1/TS12                                                                                      J1-40
+41    P53                                                                                                         J1-41
+42    P52/PMC1                                                                                                    J1-42
+43    P51/PMC0                                                                                                    J1-43
+44    P50                                                                                                         J1-44
+45    PC7/MTIOC3A/MTCLKB/TMO2/TXD8/SMOSI8/SSDA8/MISOA/TS13/CACREF                                                 J1-45
+46    PC6/MTIOC3C/MTCLKA/TMCI2/RXD8/SMISO8/SSCL8/MOSIA/TS14                                                       J1-46
+47    PC5/MTIOC3B/MTCLKD/TMRI2/SCK8/RSPCKA/TS15                                                                   J1-47
+48    PC4/MTIOC3D/MTCLKC/TMCI1/ POE0#/SCK5/CTS8#/RTS8#/SS8#/SSLA0/TSCAP                                           J1-48
+49    PC3/MTIOC4D/TXD5/SMOSI5/SSDA5/TS16                                                                          J1-49
+50    PC2/MTIOC4B/RXD5/SMISO5/SSCL5/SSLA3/TS17                                                                    J1-50
+51    PC1/MTIOC3A/SCK5/SSLA2                                                                                      J2-1
+52    PC0/MTIOC3C/CTS5#/RTS5#/SS5#/SSLA1                                                                          J2-2
+53    PB7/MTIOC3B/TXD9/SMOSI9/SSDA9/TS18                                                                          J2-3
+54    PB6/MTIOC3D/RXD9/SMISO9/SSCL9/TS19                                                                          J2-4
+55    PB5/MTIOC2A/MTIOC1B/ TMRI1/POE1#/SCK9/TS20                                                                  J2-5
+56    PB4//CTS9#/RTS9#/SS9#/TS21                                                                                  J2-6
+57    PB3/MTIOC0A/MTIOC4A/TMO0/ POE3#/SCK6/TS22                                                                   J2-7
+58    PB2//CTS6#/RTS6#/SS6#/TS23                                                                                  J2-8
+59    PB1/MTIOC0C/MTIOC4C/ TMCI0/TXD6/SMOSI6/SSDA6/TS24/IRQ4/CMPOB1                                               J2-9
+60    VCC                                                                                                         J2-10
+61    PB0/MTIC5W/RXD6/SMISO6/SSCL6/RSPCKA/TS25                                                                    J2-11
+62    VSS                                                                                                         J2-12
+63    PA7/MISOA                                                                                                   J2-13
+64    PA6/MTIC5V/MTCLKB/TMCI3/ POE2#/CTS5#/RTS5#/SS5#/MOSIA/TS26                                                  J2-14
+65    PA5//RSPCKA/TS27                                                                                            J2-15
+66    PA4/MTIC5U/MTCLKA/TMRI0/TXD5/SMOSI5/SSDA5/SSLA0/TS28/IRQ5/CVREFB1                                           J2-16
+67    PA3/MTIOC0D/MTCLKD/RXD5/SMISO5/SSCL5/TS29/IRQ6/CMPB1                                                        J2-17
+68    PA2/RXD5/SMISO5/SSCL5/SSLA3/TS30                                                                            J2-18
+69    PA1/MTIOC0B/MTCLKC/SCK5/SSLA2/TS31                                                                          J2-19
+70    PA0/MTIOC4A/SSLA1/TS32/CACREF                                                                               J2-20
+71    PE7/IRQ7/AN023                                                                                              J2-21
+72    PE6/IRQ6/AN022                                                                                              J2-22
+73    PE5/MTIOC4C/MTIOC2B/IRQ5/AN021/CMPOB0                                                                       J2-23
+74    PE4/MTIOC4D/MTIOC1A/TS33/AN020/CMPA2/CLKOUT                                                                 J2-24
+75    PE3/MTIOC4B/POE8#/CTS12#/RTS12#/SS12#/TS34/AN019/CLKOUT                                                     J2-25
+76    PE2/MTIOC4A/RXD12/RXDX12/SMISO12/SSCL12/TS35/IRQ7/AN018/CVREFB0                                             J2-26
+77    PE1/MTIOC4C/TXD12/TXDX12/SIOX12/SMOSI12/ SSDA12/AN017/CMPB0                                                 J2-27
+78    PE0/SCK12/AN016                                                                                             J2-28
+79    PD7/MTIC5U/POE0#/IRQ7/AN031                                                                                 J2-29
+80    PD6/MTIC5V/POE1#/IRQ6/AN030                                                                                 J2-30
+81    PD5/MTIC5W/POE2#/IRQ5/AN029                                                                                 J2-31
+82    PD4/POE3#/IRQ4/AN028                                                                                        J2-32
+83    PD3/POE8#/IRQ3/AN027                                                                                        J2-33
+84    PD2/MTIOC4D/SCK6/IRQ2/AN026                                                                                 J2-34
+85    PD1/MTIOC4B/RXD6/SMISO6/SSCL6/IRQ1/AN025                                                                    J2-35
+86    PD0/TXD6/SMOSI6/SSDA6/IRQ0/AN024                                                                            J2-36
+87    P47/AN007                                                                                                   J2-37
+88    P46/AN006                                                                                                   J2-38
+89    P45/AN005                                                                                                   J2-39
+90    P44/AN004                                                                                                   J2-40
+91    P43/AN003                                                                                                   J2-41
+92    P42/AN002                                                                                                   J2-42
+93    P41/AN001                                                                                                   J2-43
+94    VREFL0/PJ7                                                                                                  J2-44
+95    P40/AN000                                                                                                   J2-45
+96    VREFH0/PJ6                                                                                                  J2-46
+97    AVCC0                                                                                                       J2-47
+98    P07/ADTRG0#                                                                                                 J2-48
+99    AVSS0                                                                                                       J2-49
+100   P05/DA1                                                                                                     J2-50

@@ -10,7 +10,7 @@
 #include "r_smc_entry.h"
 #include "tbrx65ndef.h"
 
-R_CONFIG_SCI_SEND_IMPL( SCI1, 128 /* transmit buffer size */ );
+U_CONFIG_UART_PRINTF_IMPL( SCI1, 128 /* transmit buffer size */ );
 
 int main(void)
 {
