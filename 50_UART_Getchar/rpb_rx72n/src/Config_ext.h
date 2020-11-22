@@ -3,6 +3,22 @@
 
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined(__cplusplus) && (__cplusplus >= 201103L))
 
+static inline bool is_putchar_busy( void )
+{
+    volatile R_BSP_EVENACCESS_SFR uint32_t * const p_dbg_stat = (volatile R_BSP_EVENACCESS_SFR uint32_t *)0x840C0;
+    const uint32_t dbg_tx_busy = 0x00000100;
+
+    return 0 != (*p_dbg_stat & dbg_tx_busy);
+}
+
+static inline bool is_getchar_ready( void )
+{
+    volatile R_BSP_EVENACCESS_SFR uint32_t * const p_dbg_stat = (volatile R_BSP_EVENACCESS_SFR uint32_t *)0x840C0;
+    const uint32_t dbg_rx_ready = 0x00001000;
+
+    return 0 != (*p_dbg_stat & dbg_rx_ready);
+}
+
 #define Printf( serial, ... )\
     do\
     {\
