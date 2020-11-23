@@ -16,17 +16,22 @@ U_CONFIG_UART_GETCHAR_IMPL( SCI2, 128 /* receive ring buffer size */ );
 int main(void)
 {
     char c;
+    int i;
 
     for (;;)
     {
         Printf( SCI2, "Please enter a character:\r\n" );
 
-        R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
-
-        if (Is_Getchar_Ready( SCI2 ))
+        for (i = 0; i < 30; i++)
         {
-            c = Getchar( SCI2 );
-            Printf( SCI2, "\r\nYeah, %c is entered.\r\n\r\n", c );
+            R_BSP_SoftwareDelay( 100, BSP_DELAY_MILLISECS );
+
+            if (Is_Getchar_Ready( SCI2 ))
+            {
+                c = Getchar( SCI2 );
+                Printf( SCI2, "\r\nYeah, %c is entered.\r\n\r\n", c );
+                break;
+            }
         }
     }
 }

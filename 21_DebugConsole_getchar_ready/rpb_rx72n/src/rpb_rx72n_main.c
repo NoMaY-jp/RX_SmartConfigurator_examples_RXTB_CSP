@@ -13,17 +13,22 @@
 int main(void)
 {
     char c;
+    int i;
 
     for (;;)
     {
         printf( "Please enter a character:\r\n" );
 
-        R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
-
-        if (is_getchar_ready())
+        for (i = 0; i < 30; i++)
         {
-            c = getchar();
-            printf( "\r\nYeah, %c is entered.\r\n\r\n", c );
+            R_BSP_SoftwareDelay( 100, BSP_DELAY_MILLISECS );
+
+            if (is_getchar_ready())
+            {
+                c = getchar();
+                printf( "\r\nYeah, %c is entered.\r\n\r\n", c );
+                break;
+            }
         }
     }
 }

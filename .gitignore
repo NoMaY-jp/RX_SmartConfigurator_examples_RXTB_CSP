@@ -3,3 +3,6 @@ DefaultBuild/
 *.*.mtud
 *.rcpe
 *.mtls
+
+# Ignore PDF documents of Renesas API
+r01an*.pdf
