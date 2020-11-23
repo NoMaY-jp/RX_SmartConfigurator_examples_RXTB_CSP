@@ -3,6 +3,8 @@
 
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined(__cplusplus) && (__cplusplus >= 201103L))
 
+#include <stdarg.h>
+
 static inline bool is_putchar_busy( void )
 {
     volatile R_BSP_EVENACCESS_SFR uint32_t * const p_dbg_stat = (volatile R_BSP_EVENACCESS_SFR uint32_t *)0x840C0;
@@ -19,24 +21,12 @@ static inline bool is_getchar_ready( void )
     return 0 != (*p_dbg_stat & dbg_rx_ready);
 }
 
-#define Printf( serial, ... )\
-    do\
-    {\
-        extern const uint16_t g_##serial##_tx_buffer_size;\
-        extern uint8_t g_##serial##_tx_buffer[];\
-        uint32_t len;\
-        if (0 == _IEN( U_CONFIG_##serial##_TXINT ))\
-        {\
-            R_Config_##serial##_Start();\
-        }\
-        len = snprintf( (char *)g_##serial##_tx_buffer, g_##serial##_tx_buffer_size, __VA_ARGS__ );\
-        U_Config_##serial##_Serial_Send_UWT( g_##serial##_tx_buffer, len );\
-    }while (0)
+#define Printf( serial, ... ) U_Config_##serial##_Serial_Printf( __VA_ARGS__ )
 
 #define U_CONFIG_UART_PRINTF_IMPL( serial, size )\
-    const uint16_t g_##serial##_tx_buffer_size = size;\
-    uint8_t g_##serial##_tx_buffer[size];\
-    volatile bool g_##serial##_tx_ready_flag = true;\
+    static const uint16_t g_##serial##_tx_buffer_size = size;\
+    static uint8_t g_##serial##_tx_buffer[size];\
+    static volatile bool g_##serial##_tx_ready_flag = true;\
     extern void u_Config_##serial##_callback_transmitend( void );\
     extern void u_Config_##serial##_callback_transmitend( void )\
     {\
@@ -46,22 +36,41 @@ static inline bool is_getchar_ready( void )
     {\
         return !g_##serial##_tx_ready_flag;\
     }\
-    extern void U_Config_##serial##_Serial_Send( uint8_t * const tx_buf, uint16_t tx_num )\
+    extern void U_Config_##serial##_Serial_Send( const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
         g_##serial##_tx_ready_flag = false;\
-        R_Config_##serial##_Serial_Send( tx_buf, tx_num );\
+        R_Config_##serial##_Serial_Send( (/* absolutely... const */ uint8_t *)tx_buf, tx_num );\
     }\
-    extern void U_Config_##serial##_Serial_Send_UWT( uint8_t * const tx_buf, uint16_t tx_num )\
+    extern void U_Config_##serial##_Serial_Send_UWT( const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
         U_Config_##serial##_Serial_Send( tx_buf, tx_num );\
         do{}while (U_Config_##serial##_Serial_Is_Send_Busy());\
+    }\
+    extern void U_Config_##serial##_Serial_Printf( const char * const fmt, ... )\
+    {\
+        extern const uint16_t g_##serial##_tx_buffer_size;\
+        extern uint8_t g_##serial##_tx_buffer[];\
+        va_list args;\
+        int len;\
+        if (0 == _IEN( U_CONFIG_##serial##_TXINT ))\
+        {\
+            R_Config_##serial##_Start();\
+        }\
+        args = NULL;\
+        va_start( args, fmt );\
+        len = vsnprintf( (char *)g_##serial##_tx_buffer, g_##serial##_tx_buffer_size, fmt, args );\
+        if (0 < len )\
+        {\
+            U_Config_##serial##_Serial_Send_UWT( g_##serial##_tx_buffer, len );\
+        }\
     }\
     extern void u_Config_ext_header_file_Remove_Compiler_Warning( void )
 
 #define U_CONFIG_UART_PRINTF_PROTO( serial )\
     extern bool U_Config_##serial##_Serial_Is_Send_Busy( void );\
-    extern void U_Config_##serial##_Serial_Send( uint8_t * const tx_buf, uint16_t tx_num );\
-    extern void U_Config_##serial##_Serial_Send_UWT( uint8_t * const tx_buf, uint16_t tx_num )
+    extern void U_Config_##serial##_Serial_Send( const uint8_t * const tx_buf, uint16_t tx_num );\
+    extern void U_Config_##serial##_Serial_Send_UWT( const uint8_t * const tx_buf, uint16_t tx_num );\
+    extern void U_Config_##serial##_Serial_Printf( const char * const fmt, ... )
 
 U_CONFIG_UART_PRINTF_PROTO( SCI0  );
 U_CONFIG_UART_PRINTF_PROTO( SCI1  );
@@ -81,13 +90,13 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
 #define Is_Getchar_Ready( serial ) U_Config_##serial##_UART_Is_Getchar_Ready()
 
 #define U_CONFIG_UART_GETCHAR_IMPL( serial, size )\
-    const uint16_t g_##serial##_rx_buffer_size = size;\
-    volatile uint8_t g_##serial##_rx_buffer[size];\
-    volatile uint8_t g_##serial##_rx_data;\
-    volatile uint8_t * volatile gp_##serial##_rx_buffer_data_put_address = g_##serial##_rx_buffer;\
-    volatile uint8_t * gp_##serial##_rx_buffer_data_get_address = g_##serial##_rx_buffer;\
-    volatile uint16_t  g_##serial##_rx_buffer_data_count = 0;\
-    bool g_##serial##_rx_is_operation_started = false;\
+    static const uint16_t g_##serial##_rx_buffer_size = size;\
+    static volatile uint8_t g_##serial##_rx_buffer[size];\
+    static volatile uint8_t g_##serial##_rx_data;\
+    static volatile uint8_t * volatile gp_##serial##_rx_buffer_data_put_address = g_##serial##_rx_buffer;\
+    static volatile uint8_t * gp_##serial##_rx_buffer_data_get_address = g_##serial##_rx_buffer;\
+    static volatile uint16_t  g_##serial##_rx_buffer_data_count = 0;\
+    static bool g_##serial##_rx_is_operation_started = false;\
     static inline bool u_Config_##serial##_UART_rx_buffer_is_empty( void )\
     {\
         return 0 == g_##serial##_rx_buffer_data_count;\
@@ -121,7 +130,7 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
         {\
             u_Config_##serial##_UART_rx_buffer_put_data( g_##serial##_rx_data );\
         }\
-        R_Config_##serial##_Serial_Receive( (uint8_t *)&g_##serial##_rx_data, 1 );\
+        R_Config_##serial##_Serial_Receive( (/* obviously... volatile */ uint8_t *)&g_##serial##_rx_data, 1 );\
     }\
     extern bool U_Config_##serial##_UART_Is_Getchar_Ready( void )\
     {\
@@ -131,7 +140,7 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
         }\
         if (!g_##serial##_rx_is_operation_started)\
         {\
-            R_Config_##serial##_Serial_Receive( (uint8_t *)&g_##serial##_rx_data, 1 );\
+            R_Config_##serial##_Serial_Receive( (/* obviously... volatile */ uint8_t *)&g_##serial##_rx_data, 1 );\
             g_##serial##_rx_is_operation_started = true;\
         }\
         return !u_Config_##serial##_UART_rx_buffer_is_empty();\
@@ -151,7 +160,7 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
 
 #define U_CONFIG_UART_GETCHAR_PROTO( serial )\
     extern bool U_Config_##serial##_UART_Is_Getchar_Ready( void );\
-    extern uint8_t U_Config_##serial##_UART_Getchar(  void )
+    extern uint8_t U_Config_##serial##_UART_Getchar( void )
 
 U_CONFIG_UART_GETCHAR_PROTO( SCI0  );
 U_CONFIG_UART_GETCHAR_PROTO( SCI1  );
@@ -168,12 +177,12 @@ U_CONFIG_UART_GETCHAR_PROTO( SCI11 );
 U_CONFIG_UART_GETCHAR_PROTO( SCI12 );
 
 #define U_Config_I2C_Master_Start( serial ) R_Config_##serial##_Start();
-#define U_Config_I2C_Master_Send_UWT( serial, ... ) U_Config_##serial##_I2C_Master_Send_UWT( __VA_ARGS__ )
-#define U_Config_I2C_Master_Receive_UWT( serial, ... ) U_Config_##serial##_I2C_Master_Receive_UWT( __VA_ARGS__ )
+#define U_Config_I2C_Master_Send_UWT( serial, adr7, tx_buf, tx_num ) U_Config_##serial##_I2C_Master_Send_UWT( adr7, tx_buf, tx_num )
+#define U_Config_I2C_Master_Receive_UWT( serial, adr7, rx_buf, rx_num ) U_Config_##serial##_I2C_Master_Receive_UWT( adr7, rx_buf, rx_num )
 
 #define U_CONFIG_I2C_MASTER_IMPL( serial )\
-    volatile bool g_##serial##_tx_ready_flag = true;\
-    volatile bool g_##serial##_rx_ready_flag = false;\
+    static volatile bool g_##serial##_tx_ready_flag = true;\
+    static volatile bool g_##serial##_rx_ready_flag = false;\
     extern void u_Config_##serial##_callback_transmitend( void );\
     extern void u_Config_##serial##_callback_transmitend( void )\
     {\
@@ -188,39 +197,39 @@ U_CONFIG_UART_GETCHAR_PROTO( SCI12 );
     {\
         return !g_##serial##_tx_ready_flag;\
     }\
-    extern void U_Config_##serial##_I2C_Master_Send( uint8_t adr, uint8_t * const tx_buf, uint16_t tx_num )\
+    extern void U_Config_##serial##_I2C_Master_Send( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
         g_##serial##_tx_ready_flag = false;\
-        R_Config_##serial##_IIC_Master_Send( (adr << 1), tx_buf, tx_num );\
+        R_Config_##serial##_IIC_Master_Send( (adr7 << 1), (/* absolutely... const */ uint8_t *)tx_buf, tx_num );\
     }\
-    extern void U_Config_##serial##_I2C_Master_Send_UWT( uint8_t adr, uint8_t * const tx_buf, uint16_t tx_num )\
+    extern void U_Config_##serial##_I2C_Master_Send_UWT( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
-        U_Config_##serial##_I2C_Master_Send( adr, tx_buf, tx_num );\
+        U_Config_##serial##_I2C_Master_Send( adr7, (uint8_t *)tx_buf, tx_num );\
         do{}while (U_Config_##serial##_I2C_Master_Is_Send_Busy());\
     }\
     extern bool U_Config_##serial##_I2C_Master_Is_Receive_Ready( void )\
     {\
         return g_##serial##_rx_ready_flag;\
     }\
-    extern void U_Config_##serial##_I2C_Master_Receive( uint8_t adr, uint8_t * const rx_buf, uint16_t rx_num )\
+    extern void U_Config_##serial##_I2C_Master_Receive( uint8_t adr7, volatile uint8_t * const rx_buf, uint16_t rx_num )\
     {\
         g_##serial##_rx_ready_flag = false;\
-        R_Config_##serial##_IIC_Master_Receive( ((adr << 1) | 1), rx_buf, rx_num );\
+        R_Config_##serial##_IIC_Master_Receive( ((adr7 << 1) | 1), (/* obviously... volatile */ uint8_t *)rx_buf, rx_num );\
     }\
-    extern void U_Config_##serial##_I2C_Master_Receive_UWT( uint8_t adr, uint8_t * const rx_buf, uint16_t rx_num )\
+    extern void U_Config_##serial##_I2C_Master_Receive_UWT( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num )\
     {\
-        U_Config_##serial##_I2C_Master_Receive( adr, rx_buf, rx_num );\
+        U_Config_##serial##_I2C_Master_Receive( adr7, rx_buf, rx_num );\
         do{}while (!U_Config_##serial##_I2C_Master_Is_Receive_Ready());\
     }\
     extern void u_Config_ext_header_file_Remove_Compiler_Warning( void )
 
 #define U_CONFIG_I2C_MASTER_PROTO( serial )\
-    extern bool U_Config_##serial##_I2C_Master_Is_Send_Busy(  void );\
-    extern void U_Config_##serial##_I2C_Master_Send(  uint8_t adr, uint8_t * const tx_buf, uint16_t tx_num );\
-    extern void U_Config_##serial##_I2C_Master_Send_UWT(  uint8_t adr, uint8_t * const tx_buf, uint16_t tx_num );\
-    extern bool U_Config_##serial##_I2C_Master_Is_Receive_Ready(  void );\
-    extern void U_Config_##serial##_I2C_Master_Receive(  uint8_t adr, uint8_t * const rx_buf, uint16_t rx_num );\
-    extern void U_Config_##serial##_I2C_Master_Receive_UWT(  uint8_t adr, uint8_t * const rx_buf, uint16_t rx_num )
+    extern bool U_Config_##serial##_I2C_Master_Is_Send_Busy( void );\
+    extern void U_Config_##serial##_I2C_Master_Send( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num );\
+    extern void U_Config_##serial##_I2C_Master_Send_UWT( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num );\
+    extern bool U_Config_##serial##_I2C_Master_Is_Receive_Ready( void );\
+    extern void U_Config_##serial##_I2C_Master_Receive( uint8_t adr7, volatile uint8_t * const rx_buf, uint16_t rx_num );\
+    extern void U_Config_##serial##_I2C_Master_Receive_UWT( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num )
 
 U_CONFIG_I2C_MASTER_PROTO( SCI0  );
 U_CONFIG_I2C_MASTER_PROTO( SCI1  );
