@@ -25,6 +25,8 @@ static inline bool is_getchar_ready( void )
 
 #define U_CONFIG_UART_PRINTF_IMPL_MORE_READABLE\
 (\
+    SCIx,\
+\
     size,\
 \
     g_SCIx_tx_buffer_size,\
@@ -39,7 +41,7 @@ static inline bool is_getchar_ready( void )
     R_Config_SCIx_Start,\
     R_Config_SCIx_Serial_Send,\
 \
-    u_Config_ext_header_file_Remove_Compiler_Warning\
+    u_Config_ext_header_file_Just_for_Balancing\
 )\
     static const uint16_t g_SCIx_tx_buffer_size = size;\
     static uint8_t g_SCIx_tx_buffer[size];\
@@ -91,6 +93,8 @@ static inline bool is_getchar_ready( void )
 
 #define U_CONFIG_UART_PRINTF_IMPL( SCIx, size ) U_CONFIG_UART_PRINTF_IMPL_MORE_READABLE\
 (\
+    SCIx,\
+\
     size,\
 \
     g_##SCIx##_tx_buffer_size,\
@@ -105,11 +109,13 @@ static inline bool is_getchar_ready( void )
     R_Config_##SCIx##_Start,\
     R_Config_##SCIx##_Serial_Send,\
 \
-    u_Config_ext_header_file_Remove_Compiler_Warning\
+    u_Config_ext_header_file_Just_for_Balancing\
 )
 
 #define U_CONFIG_UART_PRINTF_PROTO_MORE_READABLE\
 (\
+    SCIx,\
+\
     U_Config_SCIx_UART_Is_Send_Busy,\
     U_Config_SCIx_UART_Send,\
     U_Config_SCIx_UART_Send_UWT,\
@@ -126,6 +132,8 @@ static inline bool is_getchar_ready( void )
 
 #define U_CONFIG_UART_PRINTF_PROTO( SCIx ) U_CONFIG_UART_PRINTF_PROTO_MORE_READABLE\
 (\
+    SCIx,\
+\
     U_Config_##SCIx##_UART_Is_Send_Busy,\
     U_Config_##SCIx##_UART_Send,\
     U_Config_##SCIx##_UART_Send_UWT,\
@@ -153,7 +161,10 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
 
 #define U_CONFIG_UART_GETCHAR_IMPL_MORE_READABLE\
 (\
+    SCIx,\
+\
     size,\
+\
     g_SCIx_rx_buffer_size,\
     g_SCIx_rx_buffer,\
     g_SCIx_rx_data,\
@@ -172,7 +183,7 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
     R_Config_SCIx_Start,\
     R_Config_SCIx_Serial_Receive,\
 \
-    u_Config_ext_header_file_Remove_Compiler_Warning\
+    u_Config_ext_header_file_Just_for_Balancing\
 )\
     static const uint16_t g_SCIx_rx_buffer_size = size;\
     static volatile uint8_t g_SCIx_rx_buffer[size];\
@@ -252,6 +263,8 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
 
 #define U_CONFIG_UART_GETCHAR_IMPL( SCIx, size ) U_CONFIG_UART_GETCHAR_IMPL_MORE_READABLE\
 (\
+    SCIx,\
+\
     size,\
 \
     g_##SCIx##_rx_buffer_size,\
@@ -272,11 +285,13 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
     R_Config_##SCIx##_Start,\
     R_Config_##SCIx##_Serial_Receive,\
 \
-    u_Config_ext_header_file_Remove_Compiler_Warning\
+    u_Config_ext_header_file_Just_for_Balancing\
 )
 
 #define U_CONFIG_UART_GETCHAR_PROTO_MORE_READABLE\
 (\
+    SCIx,\
+\
     U_Config_SCIx_UART_Is_Getchar_Ready,\
     U_Config_SCIx_UART_Getchar,\
 \
@@ -289,6 +304,8 @@ U_CONFIG_UART_PRINTF_PROTO( SCI12 );
 
 #define U_CONFIG_UART_GETCHAR_PROTO( SCIx ) U_CONFIG_UART_GETCHAR_PROTO_MORE_READABLE\
 (\
+    SCIx,\
+\
     U_Config_##SCIx##_UART_Is_Getchar_Ready,\
     U_Config_##SCIx##_UART_Getchar,\
 \
@@ -315,20 +332,22 @@ U_CONFIG_UART_GETCHAR_PROTO( SCI12 );
 
 #define U_CONFIG_I2C_MASTER_IMPL_MORE_READABLE\
 (\
-     g_SCIx_tx_ready_flag,\
-     g_SCIx_rx_ready_flag,\
-     u_Config_SCIx_callback_transmitend,\
-     u_Config_SCIx_callback_receiveend,\
-     U_Config_SCIx_I2C_Master_Is_Send_Busy,\
-     U_Config_SCIx_I2C_Master_Is_Receive_Ready,\
-     U_Config_SCIx_I2C_Master_Send,\
-     U_Config_SCIx_I2C_Master_Send_UWT,\
-     U_Config_SCIx_I2C_Master_Receive,\
-     U_Config_SCIx_I2C_Master_Receive_UWT,\
-     R_Config_SCIx_IIC_Master_Send,\
-     R_Config_SCIx_IIC_Master_Receive,\
+    SCIx,\
 \
-     u_Config_ext_header_file_Remove_Compiler_Warning\
+    g_SCIx_tx_ready_flag,\
+    g_SCIx_rx_ready_flag,\
+    u_Config_SCIx_callback_transmitend,\
+    u_Config_SCIx_callback_receiveend,\
+    U_Config_SCIx_I2C_Master_Is_Send_Busy,\
+    U_Config_SCIx_I2C_Master_Is_Receive_Ready,\
+    U_Config_SCIx_I2C_Master_Send,\
+    U_Config_SCIx_I2C_Master_Send_UWT,\
+    U_Config_SCIx_I2C_Master_Receive,\
+    U_Config_SCIx_I2C_Master_Receive_UWT,\
+    R_Config_SCIx_IIC_Master_Send,\
+    R_Config_SCIx_IIC_Master_Receive,\
+\
+    u_Config_ext_header_file_Just_for_Balancing\
 )\
     static volatile bool g_SCIx_tx_ready_flag = true;\
     static volatile bool g_SCIx_rx_ready_flag = false;\
@@ -383,24 +402,28 @@ U_CONFIG_UART_GETCHAR_PROTO( SCI12 );
 
 #define U_CONFIG_I2C_MASTER_IMPL( SCIx ) U_CONFIG_I2C_MASTER_IMPL_MORE_READABLE\
 (\
-     g_##SCIx##_tx_ready_flag,\
-     g_##SCIx##_rx_ready_flag,\
-     u_Config_##SCIx##_callback_transmitend,\
-     u_Config_##SCIx##_callback_receiveend,\
-     U_Config_##SCIx##_I2C_Master_Is_Send_Busy,\
-     U_Config_##SCIx##_I2C_Master_Is_Receive_Ready,\
-     U_Config_##SCIx##_I2C_Master_Send,\
-     U_Config_##SCIx##_I2C_Master_Send_UWT,\
-     U_Config_##SCIx##_I2C_Master_Receive,\
-     U_Config_##SCIx##_I2C_Master_Receive_UWT,\
-     R_Config_##SCIx##_IIC_Master_Send,\
-     R_Config_##SCIx##_IIC_Master_Receive,\
+    SCIx,\
 \
-     u_Config_ext_header_file_Remove_Compiler_Warning\
+    g_##SCIx##_tx_ready_flag,\
+    g_##SCIx##_rx_ready_flag,\
+    u_Config_##SCIx##_callback_transmitend,\
+    u_Config_##SCIx##_callback_receiveend,\
+    U_Config_##SCIx##_I2C_Master_Is_Send_Busy,\
+    U_Config_##SCIx##_I2C_Master_Is_Receive_Ready,\
+    U_Config_##SCIx##_I2C_Master_Send,\
+    U_Config_##SCIx##_I2C_Master_Send_UWT,\
+    U_Config_##SCIx##_I2C_Master_Receive,\
+    U_Config_##SCIx##_I2C_Master_Receive_UWT,\
+    R_Config_##SCIx##_IIC_Master_Send,\
+    R_Config_##SCIx##_IIC_Master_Receive,\
+\
+    u_Config_ext_header_file_Just_for_Balancing\
 )
 
 #define U_CONFIG_I2C_MASTER_PROTO_MORE_READABLE\
 (\
+    SCIx,\
+\
     U_Config_SCIx_I2C_Master_Is_Send_Busy,\
     U_Config_SCIx_I2C_Master_Is_Receive_Ready,\
     U_Config_SCIx_I2C_Master_Send,\
@@ -421,6 +444,8 @@ U_CONFIG_UART_GETCHAR_PROTO( SCI12 );
 
 #define U_CONFIG_I2C_MASTER_PROTO( SCIx ) U_CONFIG_I2C_MASTER_PROTO_MORE_READABLE\
 (\
+    SCIx,\
+\
     U_Config_##SCIx##_I2C_Master_Is_Send_Busy,\
     U_Config_##SCIx##_I2C_Master_Is_Receive_Ready,\
     U_Config_##SCIx##_I2C_Master_Send,\
