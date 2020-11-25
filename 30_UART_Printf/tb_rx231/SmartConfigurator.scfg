@@ -1123,7 +1123,7 @@
 <item id="8Cyl" input="" vlaue="0"/>
 </option>
 <option enabled="true" id="Bitrate" selection="FreeValue">
-<item id="FreeValue" input="115200" vlaue="9600"/>
+<item id="FreeValue" input="9600" vlaue="9600"/>
 <item id="9600" input="9600" vlaue="0"/>
 <item id="19200" input="19200" vlaue="0"/>
 <item id="31250" input="31250" vlaue="0"/>
