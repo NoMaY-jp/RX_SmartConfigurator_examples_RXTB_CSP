@@ -982,31 +982,7 @@ src
       <COptionPreinclude-0 />
       <COptionSectionP-0>P</COptionSectionP-0>
       <COptionShowExpansions-0>False</COptionShowExpansions-0>
-      <COptionCommandLine-0>-isa=rxv2
--fpu
--include=src\smc_gen\Config_PORT
--include=src\smc_gen\r_pincfg
--include=src\smc_gen\r_config
--include=src\smc_gen\r_bsp\mcu\rx231\register_access\ccrx
--include=src\smc_gen\r_bsp\mcu\rx231
--include=src\smc_gen\r_bsp\mcu\all
--include=src\smc_gen\r_bsp\board\user
--include=src\smc_gen\r_bsp\board\generic_rx231
--include=src\smc_gen\r_bsp
--include=src\smc_gen\general
--include=src
--nomessage=21644,20010,23034,23035,20177,23033
--utf8
--output=obj
--obj_path=%BuildModeName%
--debug
--g_line
--outcode=utf8
--listfile=%BuildModeName%
--show=source
--optimize=0
--nologo
-</COptionCommandLine-0>
+      <COptionCommandLine-0 />
       <COptionDefine-0 />
       <COptionInline-0>Auto</COptionInline-0>
       <COptionMisra2004RuleNumberRequiredAdd-0 />
@@ -1115,15 +1091,7 @@ src
       <AsmOptionPreAssembleCommands-0 />
       <AsmOptionPostAssembleCommands-0 />
       <AsmOptionOtherAdditionalOptions-0 />
-      <AsmOptionCommandLine-0>-isa=rxv2
--fpu
--utf8
--output=obj
--obj_path=%BuildModeName%
--debug
--listfile=%BuildModeName%
--nologo
-</AsmOptionCommandLine-0>
+      <AsmOptionCommandLine-0 />
     </Instance>
     <Instance Guid="dbb16727-3e81-4169-956a-790355cab4a1">
       <LinkOptionCpu-DefaultValue>False</LinkOptionCpu-DefaultValue>
@@ -1298,20 +1266,7 @@ D_1=R_1
       <LinkOptionS9-0>False</LinkOptionS9-0>
       <LinkOptionCFIIgnoreModule-0 />
       <LinkOptionOtherAdditionalOptionsForConvertFile-0 />
-      <LinkOptionCommandLine-0>-noprelink
--output=%BuildModeName%\%ProjectName%.abs
--vect=_undefined_interrupt_source_isr
--list=%BuildModeName%\%ProjectName%.map
--show=all
--nooptimize
--start=B_1,R_1,B_2,R_2,B,R,SI/04,C_1,C_2,C,C$*,D*,W*,L,P/0FFF80000,EXCEPTVECT/0FFFFFF80,RESETVECT/0FFFFFFFC
--rom=D=R,D_2=R_2,D_1=R_1
--stack
--change_message=warning=2300,2142
--total_size
--nologo
--exit
-</LinkOptionCommandLine-0>
+      <LinkOptionCommandLine-0 />
       <LinkOptionSplitVect-0>False</LinkOptionSplitVect-0>
     </Instance>
     <Instance Guid="df74c69e-635e-42d9-845e-14128ba4d48a">
@@ -1377,13 +1332,7 @@ D_1=R_1
       <LinkOptionByteCountValue-0>FF</LinkOptionByteCountValue-0>
       <LinkOptionCrc-0>None</LinkOptionCrc-0>
       <LinkOptionOtherAdditionalOptionsForConvertFile-0 />
-      <HexOptionCommandLine-0>-end
--input=%BuildModeName%\%ProjectName%.abs
--form=stype
--output=%BuildModeName%\%ProjectName%.mot
--change_message=warning=2300,2142
--exit
-</HexOptionCommandLine-0>
+      <HexOptionCommandLine-0 />
       <LinkOptionCrc2-0>False</LinkOptionCrc2-0>
       <LinkOptionCrcOutputAddress-0>0</LinkOptionCrcOutputAddress-0>
       <LinkOptionCrcCalculationRange-0 />
@@ -1546,18 +1495,7 @@ D_1=R_1
       <LbgOptionOtherAdditionalOptions-0 />
       <LbgOptionReent-0>False</LbgOptionReent-0>
       <LbgOptionSpeedAndSize-0>Speed</LbgOptionSpeedAndSize-0>
-      <LbgOptionCommandLine-0>-isa=rxv3
--fpu
--dpfpu
--dbl_size=8
--lang=c99
--head=runtime,math,stdio,stdlib,string
--output=%BuildModeName%\%ProjectName%.lib
--optimize=max
--goptimize
--speed
--nologo
-</LbgOptionCommandLine-0>
+      <LbgOptionCommandLine-0 />
       <LbgOptionHeadMathH-0>True</LbgOptionHeadMathH-0>
       <LbgOptionLoop-0>Auto</LbgOptionLoop-0>
       <LbgOptionSecureMalloc-0>False</LbgOptionSecureMalloc-0>
