@@ -22,14 +22,17 @@ int main(void)
     {
         Printf( SCI2, "Please enter a character:\r\n" );
 
-        for (i = 0; i < 30; i++)
+        for (i = 0; i < 3; i++)
         {
-            R_BSP_SoftwareDelay( 100, BSP_DELAY_MILLISECS );
+            R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
 
             if (Is_Getchar_Ready( SCI2 ))
             {
                 c = Getchar( SCI2 );
                 Printf( SCI2, "\r\nYeah, %c is entered.\r\n\r\n", c );
+
+                R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
+
                 break;
             }
         }

@@ -19,14 +19,17 @@ int main(void)
     {
         printf( "Please enter a character:\r\n" );
 
-        for (i = 0; i < 30; i++)
+        for (i = 0; i < 3; i++)
         {
-            R_BSP_SoftwareDelay( 100, BSP_DELAY_MILLISECS );
+            R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
 
             if (is_getchar_ready())
             {
                 c = getchar();
                 printf( "\r\nYeah, %c is entered.\r\n\r\n", c );
+
+                R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
+
                 break;
             }
         }
