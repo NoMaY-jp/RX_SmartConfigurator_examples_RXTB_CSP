@@ -286,6 +286,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
         do{}while (!U_Config_SCIx_UART_Is_Getchar_Ready());\
         _IEN( U_CONFIG_SCIx_RXINT ) = 0;\
         {\
+            u_Config_wait_for_write_access_completion( _IEN( U_CONFIG_SCIx_RXINT ), 0 );\
             u_Config_SCIx_UART_rx_buffer_get_data( &c );\
         }\
         _IEN( U_CONFIG_SCIx_RXINT ) = 1;\
@@ -536,6 +537,24 @@ U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI9  );
 U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI10 );
 U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI11 );
 U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI12 );
+
+/****************************************************************************/
+/****************************************************************************/
+
+R_BSP_PRAGMA_STATIC_INLINE_ASM( u_Config_wait_for_write_access_completion_helper )
+void u_Config_wait_for_write_access_completion_helper( void )
+{
+    /* Nothing to do. */
+}
+
+#define u_Config_wait_for_write_access_completion( written_register, written_value )\
+    do{\
+        if ((written_value) == (written_register))\
+        {\
+            /* Probably come here. */\
+            u_Config_wait_for_write_access_completion_helper();\
+        }\
+    }while (0)
 
 /****************************************************************************/
 /****************************************************************************/
