@@ -1,9 +1,18 @@
 #ifndef CONFIG_EXT_H
 #define CONFIG_EXT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined(__cplusplus) && (__cplusplus >= 201103L))
 
 #include <stdarg.h>
+
+/****************************************************************************/
+
+#define MD_WAIT_FINISH (true)
+#define MD_DONT_WAIT_FINISH (false)
 
 /****************************************************************************/
 
@@ -30,13 +39,21 @@ static inline bool is_getchar_ready( void )
 
 /****************************************************************************/
 
+#ifdef __cplusplus
+#define U_CONFIG_EXTERN_C extern "C"
+#else
+#define U_CONFIG_EXTERN_C extern
+#endif
+
+/****************************************************************************/
+
 #define U_CONFIG_UART_PRINTF_IMPL( SCIx, size ) U_CONFIG_##SCIx##_UART_PRINTF_IMPL( size )
 
 #define Printf( SCIx, ... ) U_Config_##SCIx##_UART_Printf( __VA_ARGS__ )
 
 /****************************************************************************/
 
-#define U_CONFIG_UART_PRINTF_IMPL_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_UART_PRINTF_IMPL_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
@@ -45,11 +62,15 @@ static inline bool is_getchar_ready( void )
     g_SCIx_tx_buffer_size,\
     g_SCIx_tx_buffer,\
     g_SCIx_tx_ready_flag,\
+\
     u_Config_SCIx_callback_transmitend,\
+    U_Config_SCIx_UART_Send_Busy_On,\
     U_Config_SCIx_UART_Is_Send_Busy,\
+    U_Config_SCIx_UART_Send_IT,\
     U_Config_SCIx_UART_Send,\
-    U_Config_SCIx_UART_Send_UWT,\
+    U_Config_SCIx_UART_Send_Ex,\
     U_Config_SCIx_UART_Printf,\
+\
     U_CONFIG_SCIx_TXINT,\
     R_Config_SCIx_Start,\
     R_Config_SCIx_Serial_Send,\
@@ -58,53 +79,68 @@ static inline bool is_getchar_ready( void )
 )\
     static const uint16_t g_SCIx_tx_buffer_size = size;\
     static uint8_t g_SCIx_tx_buffer[size];\
-    static volatile bool g_SCIx_tx_ready_flag = true;\
+    volatile bool g_SCIx_tx_ready_flag = true;\
 \
-    void u_Config_SCIx_callback_transmitend( void );\
-    void u_Config_SCIx_callback_transmitend( void )\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_transmitend( void );\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_transmitend( void )\
     {\
         g_SCIx_tx_ready_flag = true;\
     }\
 \
-    bool U_Config_SCIx_UART_Is_Send_Busy( void )\
+    static void U_Config_SCIx_UART_Send_Busy_On( void )\
+    {\
+        g_SCIx_tx_ready_flag = false;\
+    }\
+\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_UART_Is_Send_Busy( void )\
     {\
         return !g_SCIx_tx_ready_flag;\
     }\
 \
-    void U_Config_SCIx_UART_Send( const uint8_t * const tx_buf, uint16_t tx_num )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Send_IT( const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
-        g_SCIx_tx_ready_flag = false;\
+        U_Config_SCIx_UART_Send_Busy_On();\
         R_Config_SCIx_Serial_Send( (/* absolutely... const */ uint8_t *)tx_buf, tx_num );\
     }\
 \
-    void U_Config_SCIx_UART_Send_UWT( const uint8_t * const tx_buf, uint16_t tx_num )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Send( const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
-        U_Config_SCIx_UART_Send( tx_buf, tx_num );\
+        U_Config_SCIx_UART_Send_IT( tx_buf, tx_num );\
         do{}while (U_Config_SCIx_UART_Is_Send_Busy());\
     }\
 \
-    void U_Config_SCIx_UART_Printf( const char * const fmt, ... )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Send_Ex( const uint8_t * const tx_buf, uint16_t tx_num, bool tx_wflag )\
     {\
-        extern const uint16_t g_SCIx_tx_buffer_size;\
-        extern uint8_t g_SCIx_tx_buffer[];\
+        if (MD_DONT_WAIT_FINISH == tx_wflag)\
+        {\
+            U_Config_SCIx_UART_Send_IT( tx_buf, tx_num );\
+        }\
+        else\
+        {\
+            U_Config_SCIx_UART_Send( tx_buf, tx_num );\
+        }\
+    }\
+\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Printf( const char * const fmt, ... )\
+    {\
         va_list args;\
         int len;\
         if (0 == _IEN( U_CONFIG_SCIx_TXINT ))\
         {\
             R_Config_SCIx_Start();\
         }\
-        args = NULL;\
+        args = 0;\
         va_start( args, fmt );\
         len = vsnprintf( (char *)g_SCIx_tx_buffer, g_SCIx_tx_buffer_size, fmt, args );\
         if (0 < len )\
         {\
-            U_Config_SCIx_UART_Send_UWT( g_SCIx_tx_buffer, len );\
+            U_Config_SCIx_UART_Send_Ex( g_SCIx_tx_buffer, len, MD_WAIT_FINISH );\
         }\
     }\
 \
     extern void u_Config_ext_header_file_Remove_Compiler_Warning( void )
 
-#define U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCIx, size ) U_CONFIG_UART_PRINTF_IMPL_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCIx, size ) U_CONFIG_SCI_UART_PRINTF_IMPL_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
@@ -113,11 +149,15 @@ static inline bool is_getchar_ready( void )
     g_##SCIx##_tx_buffer_size,\
     g_##SCIx##_tx_buffer,\
     g_##SCIx##_tx_ready_flag,\
+\
     u_Config_##SCIx##_callback_transmitend,\
+    U_Config_##SCIx##_UART_Send_Busy_On,\
     U_Config_##SCIx##_UART_Is_Send_Busy,\
+    U_Config_##SCIx##_UART_Send_IT,\
     U_Config_##SCIx##_UART_Send,\
-    U_Config_##SCIx##_UART_Send_UWT,\
+    U_Config_##SCIx##_UART_Send_Ex,\
     U_Config_##SCIx##_UART_Printf,\
+\
     U_CONFIG_##SCIx##_TXINT,\
     R_Config_##SCIx##_Start,\
     R_Config_##SCIx##_Serial_Send,\
@@ -125,63 +165,69 @@ static inline bool is_getchar_ready( void )
     u_Config_ext_header_file_Just_for_Balancing\
 )
 
-#define U_CONFIG_SCI0_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI0,  size )
-#define U_CONFIG_SCI1_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI1,  size )
-#define U_CONFIG_SCI2_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI2,  size )
-#define U_CONFIG_SCI3_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI3,  size )
-#define U_CONFIG_SCI4_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI4,  size )
-#define U_CONFIG_SCI5_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI5,  size )
-#define U_CONFIG_SCI6_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI6,  size )
-#define U_CONFIG_SCI7_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI7,  size )
-#define U_CONFIG_SCI8_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI8,  size )
-#define U_CONFIG_SCI9_UART_PRINTF_IMPL(  size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI9,  size )
-#define U_CONFIG_SCI10_UART_PRINTF_IMPL( size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI10, size )
-#define U_CONFIG_SCI11_UART_PRINTF_IMPL( size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI11, size )
-#define U_CONFIG_SCI12_UART_PRINTF_IMPL( size ) U_CONFIG_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI12, size )
+#define U_CONFIG_SCI0_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI0,  size )
+#define U_CONFIG_SCI1_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI1,  size )
+#define U_CONFIG_SCI2_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI2,  size )
+#define U_CONFIG_SCI3_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI3,  size )
+#define U_CONFIG_SCI4_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI4,  size )
+#define U_CONFIG_SCI5_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI5,  size )
+#define U_CONFIG_SCI6_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI6,  size )
+#define U_CONFIG_SCI7_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI7,  size )
+#define U_CONFIG_SCI8_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI8,  size )
+#define U_CONFIG_SCI9_UART_PRINTF_IMPL(  size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI9,  size )
+#define U_CONFIG_SCI10_UART_PRINTF_IMPL( size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI10, size )
+#define U_CONFIG_SCI11_UART_PRINTF_IMPL( size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI11, size )
+#define U_CONFIG_SCI12_UART_PRINTF_IMPL( size ) U_CONFIG_SCI_UART_PRINTF_IMPL_INTERMEDIATE_STEP( SCI12, size )
 
-#define U_CONFIG_UART_PRINTF_PROTO_AS_READABLE_AS_POSSIBLE\
+/****************************************************************************/
+
+#define U_CONFIG_SCI_UART_SEND_PROTO_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
     U_Config_SCIx_UART_Is_Send_Busy,\
+    U_Config_SCIx_UART_Send_IT,\
     U_Config_SCIx_UART_Send,\
-    U_Config_SCIx_UART_Send_UWT,\
+    U_Config_SCIx_UART_Send_Ex,\
     U_Config_SCIx_UART_Printf,\
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )\
-    extern bool U_Config_SCIx_UART_Is_Send_Busy( void );\
-    extern void U_Config_SCIx_UART_Send( const uint8_t * const tx_buf, uint16_t tx_num );\
-    extern void U_Config_SCIx_UART_Send_UWT( const uint8_t * const tx_buf, uint16_t tx_num );\
-    extern void U_Config_SCIx_UART_Printf( const char * const fmt, ... );\
+\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_UART_Is_Send_Busy( void );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Send_IT( const uint8_t * const tx_buf, uint16_t tx_num );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Send( const uint8_t * const tx_buf, uint16_t tx_num );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Send_Ex( const uint8_t * const tx_buf, uint16_t tx_num, bool tx_wflag );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_UART_Printf( const char * const fmt, ... );\
 \
     extern void u_Config_ext_header_file_Just_for_Balancing( void )
 
-#define U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCIx ) U_CONFIG_UART_PRINTF_PROTO_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCIx ) U_CONFIG_SCI_UART_SEND_PROTO_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
     U_Config_##SCIx##_UART_Is_Send_Busy,\
+    U_Config_##SCIx##_UART_Send_IT,\
     U_Config_##SCIx##_UART_Send,\
-    U_Config_##SCIx##_UART_Send_UWT,\
+    U_Config_##SCIx##_UART_Send_Ex,\
     U_Config_##SCIx##_UART_Printf,\
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )
 
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI0  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI1  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI2  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI3  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI4  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI5  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI6  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI7  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI8  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI9  );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI10 );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI11 );
-U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI0  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI1  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI2  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI3  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI4  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI5  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI6  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI7  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI8  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI9  );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI10 );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI11 );
+U_CONFIG_SCI_UART_SEND_PROTO_INTERMEDIATE_STEP( SCI12 );
 
 /****************************************************************************/
 
@@ -192,7 +238,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
 
 /****************************************************************************/
 
-#define U_CONFIG_UART_GETCHAR_IMPL_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_UART_GETCHAR_IMPL_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
@@ -205,6 +251,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     gp_SCIx_rx_buffer_data_get_address,\
     g_SCIx_rx_buffer_data_count,\
     g_SCIx_rx_is_operation_started,\
+\
     u_Config_SCIx_UART_rx_buffer_is_empty,\
     u_Config_SCIx_UART_rx_buffer_is_full,\
     u_Config_SCIx_UART_rx_buffer_get_data,\
@@ -212,6 +259,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     u_Config_SCIx_callback_receiveend,\
     U_Config_SCIx_UART_Is_Getchar_Ready,\
     U_Config_SCIx_UART_Getchar,\
+\
     U_CONFIG_SCIx_RXINT,\
     R_Config_SCIx_Start,\
     R_Config_SCIx_Serial_Receive,\
@@ -226,17 +274,20 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     static volatile uint16_t  g_SCIx_rx_buffer_data_count = 0;\
     static bool g_SCIx_rx_is_operation_started = false;\
 \
-    static inline bool u_Config_SCIx_UART_rx_buffer_is_empty( void )\
+    R_BSP_PRAGMA_STATIC_INLINE( u_Config_SCIx_UART_rx_buffer_is_empty )\
+    bool u_Config_SCIx_UART_rx_buffer_is_empty( void )\
     {\
         return 0 == g_SCIx_rx_buffer_data_count;\
     }\
 \
-    static inline bool u_Config_SCIx_UART_rx_buffer_is_full( void )\
+    R_BSP_PRAGMA_STATIC_INLINE( u_Config_SCIx_UART_rx_buffer_is_full )\
+    bool u_Config_SCIx_UART_rx_buffer_is_full( void )\
     {\
         return g_SCIx_rx_buffer_size <= g_SCIx_rx_buffer_data_count;\
     }\
 \
-    static inline void u_Config_SCIx_UART_rx_buffer_get_data( uint8_t *pc )\
+    R_BSP_PRAGMA_STATIC_INLINE( u_Config_SCIx_UART_rx_buffer_get_data )\
+    void u_Config_SCIx_UART_rx_buffer_get_data( uint8_t *pc )\
     {\
         *pc = *gp_SCIx_rx_buffer_data_get_address++;\
         if ( g_SCIx_rx_buffer + g_SCIx_rx_buffer_size <= gp_SCIx_rx_buffer_data_get_address)\
@@ -246,7 +297,8 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
         g_SCIx_rx_buffer_data_count--;\
     }\
 \
-    static inline void u_Config_SCIx_UART_rx_buffer_put_data( uint8_t c )\
+    R_BSP_PRAGMA_STATIC_INLINE( u_Config_SCIx_UART_rx_buffer_put_data )\
+    void u_Config_SCIx_UART_rx_buffer_put_data( uint8_t c )\
     {\
         *gp_SCIx_rx_buffer_data_put_address++ = c;\
         if ( g_SCIx_rx_buffer + g_SCIx_rx_buffer_size <= gp_SCIx_rx_buffer_data_put_address)\
@@ -256,8 +308,8 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
         g_SCIx_rx_buffer_data_count++;\
     }\
 \
-    void u_Config_SCIx_callback_receiveend( void );\
-    void u_Config_SCIx_callback_receiveend( void )\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_receiveend( void );\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_receiveend( void )\
     {\
         if (!u_Config_SCIx_UART_rx_buffer_is_full())\
         {\
@@ -266,7 +318,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
         R_Config_SCIx_Serial_Receive( (/* obviously... volatile */ uint8_t *)&g_SCIx_rx_data, 1 );\
     }\
 \
-    bool U_Config_SCIx_UART_Is_Getchar_Ready( void )\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_UART_Is_Getchar_Ready( void )\
     {\
         if (0 == _IEN( U_CONFIG_SCIx_RXINT ))\
         {\
@@ -280,7 +332,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
         return !u_Config_SCIx_UART_rx_buffer_is_empty();\
     }\
 \
-    uint8_t U_Config_SCIx_UART_Getchar( void )\
+    U_CONFIG_EXTERN_C uint8_t U_Config_SCIx_UART_Getchar( void )\
     {\
         uint8_t c;\
         do{}while (!U_Config_SCIx_UART_Is_Getchar_Ready());\
@@ -295,7 +347,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
 \
     extern void u_Config_ext_header_file_Remove_Compiler_Warning( void )
 
-#define U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCIx, size ) U_CONFIG_UART_GETCHAR_IMPL_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCIx, size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
@@ -308,6 +360,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     gp_##SCIx##_rx_buffer_data_get_address,\
     g_##SCIx##_rx_buffer_data_count,\
     g_##SCIx##_rx_is_operation_started,\
+\
     u_Config_##SCIx##_UART_rx_buffer_is_empty,\
     u_Config_##SCIx##_UART_rx_buffer_is_full,\
     u_Config_##SCIx##_UART_rx_buffer_get_data,\
@@ -315,6 +368,7 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     u_Config_##SCIx##_callback_receiveend,\
     U_Config_##SCIx##_UART_Is_Getchar_Ready,\
     U_Config_##SCIx##_UART_Getchar,\
+\
     U_CONFIG_##SCIx##_RXINT,\
     R_Config_##SCIx##_Start,\
     R_Config_##SCIx##_Serial_Receive,\
@@ -322,21 +376,23 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     u_Config_ext_header_file_Just_for_Balancing\
 )
 
-#define U_CONFIG_SCI0_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI0,  size )
-#define U_CONFIG_SCI1_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI1,  size )
-#define U_CONFIG_SCI2_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI2,  size )
-#define U_CONFIG_SCI3_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI3,  size )
-#define U_CONFIG_SCI4_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI4,  size )
-#define U_CONFIG_SCI5_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI5,  size )
-#define U_CONFIG_SCI6_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI6,  size )
-#define U_CONFIG_SCI7_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI7,  size )
-#define U_CONFIG_SCI8_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI8,  size )
-#define U_CONFIG_SCI9_UART_GETCHAR_IMPL(  size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI9,  size )
-#define U_CONFIG_SCI10_UART_GETCHAR_IMPL( size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI10, size )
-#define U_CONFIG_SCI11_UART_GETCHAR_IMPL( size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI11, size )
-#define U_CONFIG_SCI12_UART_GETCHAR_IMPL( size ) U_CONFIG_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI12, size )
+#define U_CONFIG_SCI0_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI0,  size )
+#define U_CONFIG_SCI1_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI1,  size )
+#define U_CONFIG_SCI2_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI2,  size )
+#define U_CONFIG_SCI3_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI3,  size )
+#define U_CONFIG_SCI4_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI4,  size )
+#define U_CONFIG_SCI5_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI5,  size )
+#define U_CONFIG_SCI6_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI6,  size )
+#define U_CONFIG_SCI7_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI7,  size )
+#define U_CONFIG_SCI8_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI8,  size )
+#define U_CONFIG_SCI9_UART_GETCHAR_IMPL(  size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI9,  size )
+#define U_CONFIG_SCI10_UART_GETCHAR_IMPL( size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI10, size )
+#define U_CONFIG_SCI11_UART_GETCHAR_IMPL( size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI11, size )
+#define U_CONFIG_SCI12_UART_GETCHAR_IMPL( size ) U_CONFIG_SCI_UART_GETCHAR_IMPL_INTERMEDIATE_STEP( SCI12, size )
 
-#define U_CONFIG_UART_GETCHAR_PROTO_AS_READABLE_AS_POSSIBLE\
+/****************************************************************************/
+
+#define U_CONFIG_SCI_UART_RECEIVE_PROTO_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
@@ -345,12 +401,12 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )\
-    extern bool U_Config_SCIx_UART_Is_Getchar_Ready( void );\
-    extern uint8_t U_Config_SCIx_UART_Getchar( void );\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_UART_Is_Getchar_Ready( void );\
+    U_CONFIG_EXTERN_C uint8_t U_Config_SCIx_UART_Getchar( void );\
 \
     extern void u_Config_ext_header_file_Just_for_Balancing( void )
 
-#define U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCIx ) U_CONFIG_UART_GETCHAR_PROTO_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCIx ) U_CONFIG_SCI_UART_RECEIVE_PROTO_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
@@ -360,203 +416,250 @@ U_CONFIG_UART_PRINTF_PROTO_INTERMEDIATE_STEP( SCI12 );
     u_Config_ext_header_file_Just_for_Balancing\
 )
 
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI0  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI1  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI2  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI3  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI4  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI5  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI6  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI7  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI8  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI9  );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI10 );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI11 );
-U_CONFIG_UART_GETCHAR_PROTO_INTERMEDIATE_STEP( SCI12 );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI0  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI1  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI2  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI3  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI4  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI5  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI6  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI7  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI8  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI9  );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI10 );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI11 );
+U_CONFIG_SCI_UART_RECEIVE_PROTO_INTERMEDIATE_STEP( SCI12 );
 
 /****************************************************************************/
 
 #define U_CONFIG_I2C_MASTER_IMPL( SCIx ) U_CONFIG_##SCIx##_I2C_MASTER_IMPL()
 
 #define U_Config_I2C_Master_Start( SCIx ) R_Config_##SCIx##_Start();
-#define U_Config_I2C_Master_Send_UWT( SCIx, adr7, tx_buf, tx_num ) U_Config_##SCIx##_I2C_Master_Send_UWT( adr7, tx_buf, tx_num )
-#define U_Config_I2C_Master_Receive_UWT( SCIx, adr7, rx_buf, rx_num ) U_Config_##SCIx##_I2C_Master_Receive_UWT( adr7, rx_buf, rx_num )
+#define U_Config_I2C_Master_Send_Ex( SCIx, adr7, tx_buf, tx_num, tx_wtflag ) U_Config_##SCIx##_I2C_Master_Send_Ex( adr7, tx_buf, tx_num, tx_wtflag )
+#define U_Config_I2C_Master_Receive_Ex( SCIx, adr7, rx_buf, rx_num, rx_wtflag ) U_Config_##SCIx##_I2C_Master_Receive_Ex( adr7, rx_buf, rx_num, rx_wtflag )
 
 /****************************************************************************/
 
-#define U_CONFIG_I2C_MASTER_IMPL_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_I2C_MASTER_IMPL_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
     g_SCIx_tx_ready_flag,\
     g_SCIx_rx_ready_flag,\
+\
     u_Config_SCIx_callback_transmitend,\
     u_Config_SCIx_callback_receiveend,\
+    U_Config_SCIx_I2C_Master_Send_Busy_On,\
     U_Config_SCIx_I2C_Master_Is_Send_Busy,\
+    U_Config_SCIx_I2C_Master_Receive_Ready_Off,\
     U_Config_SCIx_I2C_Master_Is_Receive_Ready,\
+    U_Config_SCIx_I2C_Master_Send_IT,\
     U_Config_SCIx_I2C_Master_Send,\
-    U_Config_SCIx_I2C_Master_Send_UWT,\
+    U_Config_SCIx_I2C_Master_Send_Ex,\
+    U_Config_SCIx_I2C_Master_Receive_IT,\
     U_Config_SCIx_I2C_Master_Receive,\
-    U_Config_SCIx_I2C_Master_Receive_UWT,\
+    U_Config_SCIx_I2C_Master_Receive_Ex,\
+\
     R_Config_SCIx_IIC_Master_Send,\
     R_Config_SCIx_IIC_Master_Receive,\
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )\
-    static volatile bool g_SCIx_tx_ready_flag = true;\
-    static volatile bool g_SCIx_rx_ready_flag = false;\
+    volatile bool g_SCIx_tx_ready_flag = true;\
+    volatile bool g_SCIx_rx_ready_flag = false;\
 \
-    void u_Config_SCIx_callback_transmitend( void );\
-    void u_Config_SCIx_callback_transmitend( void )\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_transmitend( void );\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_transmitend( void )\
     {\
         g_SCIx_tx_ready_flag = true;\
     }\
 \
-    void u_Config_SCIx_callback_receiveend( void );\
-    void u_Config_SCIx_callback_receiveend( void )\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_receiveend( void );\
+    U_CONFIG_EXTERN_C void u_Config_SCIx_callback_receiveend( void )\
     {\
         g_SCIx_rx_ready_flag = true;\
     }\
 \
-    bool U_Config_SCIx_I2C_Master_Is_Send_Busy( void )\
+    static void U_Config_SCIx_I2C_Master_Send_Busy_On( void )\
+    {\
+        g_SCIx_tx_ready_flag = false;\
+    }\
+\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_I2C_Master_Is_Send_Busy( void )\
     {\
         return !g_SCIx_tx_ready_flag;\
     }\
 \
-    bool U_Config_SCIx_I2C_Master_Is_Receive_Ready( void )\
+    static void U_Config_SCIx_I2C_Master_Receive_Ready_Off( void )\
+    {\
+        g_SCIx_rx_ready_flag = false;\
+    }\
+\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_I2C_Master_Is_Receive_Ready( void )\
     {\
         return g_SCIx_rx_ready_flag;\
     }\
 \
-    void U_Config_SCIx_I2C_Master_Send( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Send_IT( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
-        g_SCIx_tx_ready_flag = false;\
+        U_Config_SCIx_I2C_Master_Send_Busy_On();\
         R_Config_SCIx_IIC_Master_Send( (adr7 << 1), (/* absolutely... const */ uint8_t *)tx_buf, tx_num );\
     }\
 \
-    void U_Config_SCIx_I2C_Master_Send_UWT( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Send( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num )\
     {\
-        U_Config_SCIx_I2C_Master_Send( adr7, (uint8_t *)tx_buf, tx_num );\
+        U_Config_SCIx_I2C_Master_Send_IT( adr7, (uint8_t *)tx_buf, tx_num );\
         do{}while (U_Config_SCIx_I2C_Master_Is_Send_Busy());\
     }\
 \
-    void U_Config_SCIx_I2C_Master_Receive( uint8_t adr7, volatile uint8_t * const rx_buf, uint16_t rx_num )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Send_Ex( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num, bool tx_wflag )\
     {\
-        g_SCIx_rx_ready_flag = false;\
+        if (MD_DONT_WAIT_FINISH == tx_wflag)\
+        {\
+            U_Config_SCIx_I2C_Master_Send_IT( adr7, tx_buf, tx_num );\
+        }\
+        else\
+        {\
+            U_Config_SCIx_I2C_Master_Send( adr7, tx_buf, tx_num );\
+        }\
+    }\
+\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Receive_IT( uint8_t adr7, volatile uint8_t * const rx_buf, uint16_t rx_num )\
+    {\
+        U_Config_SCIx_I2C_Master_Receive_Ready_Off();\
         R_Config_SCIx_IIC_Master_Receive( ((adr7 << 1) | 1), (/* obviously... volatile */ uint8_t *)rx_buf, rx_num );\
     }\
 \
-    void U_Config_SCIx_I2C_Master_Receive_UWT( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num )\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Receive( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num )\
     {\
-        U_Config_SCIx_I2C_Master_Receive( adr7, rx_buf, rx_num );\
+        U_Config_SCIx_I2C_Master_Receive_IT( adr7, rx_buf, rx_num );\
         do{}while (!U_Config_SCIx_I2C_Master_Is_Receive_Ready());\
+    }\
+\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Receive_Ex( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num, bool rx_wflag )\
+    {\
+        if (MD_DONT_WAIT_FINISH == rx_wflag)\
+        {\
+            U_Config_SCIx_I2C_Master_Receive_IT( adr7, rx_buf, rx_num );\
+        }\
+        else\
+        {\
+            U_Config_SCIx_I2C_Master_Receive( adr7, rx_buf, rx_num );\
+        }\
     }\
 \
     extern void u_Config_ext_header_file_Remove_Compiler_Warning( void )
 
-#define U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCIx ) U_CONFIG_I2C_MASTER_IMPL_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCIx ) U_CONFIG_SCI_I2C_MASTER_IMPL_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
     g_##SCIx##_tx_ready_flag,\
     g_##SCIx##_rx_ready_flag,\
+\
     u_Config_##SCIx##_callback_transmitend,\
     u_Config_##SCIx##_callback_receiveend,\
+    U_Config_##SCIx##_I2C_Master_Send_Busy_On,\
     U_Config_##SCIx##_I2C_Master_Is_Send_Busy,\
+    U_Config_##SCIx##_I2C_Master_Receive_Ready_Off,\
     U_Config_##SCIx##_I2C_Master_Is_Receive_Ready,\
+    U_Config_##SCIx##_I2C_Master_Send_IT,\
     U_Config_##SCIx##_I2C_Master_Send,\
-    U_Config_##SCIx##_I2C_Master_Send_UWT,\
+    U_Config_##SCIx##_I2C_Master_Send_Ex,\
+    U_Config_##SCIx##_I2C_Master_Receive_IT,\
     U_Config_##SCIx##_I2C_Master_Receive,\
-    U_Config_##SCIx##_I2C_Master_Receive_UWT,\
+    U_Config_##SCIx##_I2C_Master_Receive_Ex,\
+\
     R_Config_##SCIx##_IIC_Master_Send,\
     R_Config_##SCIx##_IIC_Master_Receive,\
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )
 
-#define U_CONFIG_SCI0_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI0  )
-#define U_CONFIG_SCI1_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI1  )
-#define U_CONFIG_SCI2_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI2  )
-#define U_CONFIG_SCI3_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI3  )
-#define U_CONFIG_SCI4_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI4  )
-#define U_CONFIG_SCI5_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI5  )
-#define U_CONFIG_SCI6_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI6  )
-#define U_CONFIG_SCI7_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI7  )
-#define U_CONFIG_SCI8_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI8  )
-#define U_CONFIG_SCI9_I2C_MASTER_IMPL( ) U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI9  )
-#define U_CONFIG_SCI10_I2C_MASTER_IMPL() U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI10 )
-#define U_CONFIG_SCI11_I2C_MASTER_IMPL() U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI11 )
-#define U_CONFIG_SCI12_I2C_MASTER_IMPL() U_CONFIG_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI12 )
+#define U_CONFIG_SCI0_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI0  )
+#define U_CONFIG_SCI1_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI1  )
+#define U_CONFIG_SCI2_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI2  )
+#define U_CONFIG_SCI3_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI3  )
+#define U_CONFIG_SCI4_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI4  )
+#define U_CONFIG_SCI5_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI5  )
+#define U_CONFIG_SCI6_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI6  )
+#define U_CONFIG_SCI7_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI7  )
+#define U_CONFIG_SCI8_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI8  )
+#define U_CONFIG_SCI9_I2C_MASTER_IMPL( ) U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI9  )
+#define U_CONFIG_SCI10_I2C_MASTER_IMPL() U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI10 )
+#define U_CONFIG_SCI11_I2C_MASTER_IMPL() U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI11 )
+#define U_CONFIG_SCI12_I2C_MASTER_IMPL() U_CONFIG_SCI_I2C_MASTER_IMPL_INTERMEDIATE_STEP( SCI12 )
 
-#define U_CONFIG_I2C_MASTER_PROTO_AS_READABLE_AS_POSSIBLE\
+/****************************************************************************/
+
+#define U_CONFIG_SCI_I2C_MASTER_PROTO_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
     U_Config_SCIx_I2C_Master_Is_Send_Busy,\
     U_Config_SCIx_I2C_Master_Is_Receive_Ready,\
+    U_Config_SCIx_I2C_Master_Send_IT,\
     U_Config_SCIx_I2C_Master_Send,\
-    U_Config_SCIx_I2C_Master_Send_UWT,\
+    U_Config_SCIx_I2C_Master_Send_Ex,\
+    U_Config_SCIx_I2C_Master_Receive_IT,\
     U_Config_SCIx_I2C_Master_Receive,\
-    U_Config_SCIx_I2C_Master_Receive_UWT,\
+    U_Config_SCIx_I2C_Master_Receive_Ex,\
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )\
-    extern bool U_Config_SCIx_I2C_Master_Is_Send_Busy( void );\
-    extern bool U_Config_SCIx_I2C_Master_Is_Receive_Ready( void );\
-    extern void U_Config_SCIx_I2C_Master_Send( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num );\
-    extern void U_Config_SCIx_I2C_Master_Send_UWT( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num );\
-    extern void U_Config_SCIx_I2C_Master_Receive( uint8_t adr7, volatile uint8_t * const rx_buf, uint16_t rx_num );\
-    extern void U_Config_SCIx_I2C_Master_Receive_UWT( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num );\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_I2C_Master_Is_Send_Busy( void );\
+    U_CONFIG_EXTERN_C bool U_Config_SCIx_I2C_Master_Is_Receive_Ready( void );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Send_IT( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Send( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Send_Ex( uint8_t adr7, const uint8_t * const tx_buf, uint16_t tx_num, bool tx_wflag );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Receive_IT( uint8_t adr7, volatile uint8_t * const rx_buf, uint16_t rx_num );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Receive( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num );\
+    U_CONFIG_EXTERN_C void U_Config_SCIx_I2C_Master_Receive_Ex( uint8_t adr7, uint8_t * const rx_buf, uint16_t rx_num, bool rx_wflag );\
 \
     extern void u_Config_ext_header_file_Just_for_Balancing( void )
 
-#define U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCIx ) U_CONFIG_I2C_MASTER_PROTO_AS_READABLE_AS_POSSIBLE\
+#define U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCIx ) U_CONFIG_SCI_I2C_MASTER_PROTO_AS_READABLE_AS_POSSIBLE\
 (\
     SCIx,\
 \
     U_Config_##SCIx##_I2C_Master_Is_Send_Busy,\
     U_Config_##SCIx##_I2C_Master_Is_Receive_Ready,\
+    U_Config_##SCIx##_I2C_Master_Send_IT,\
     U_Config_##SCIx##_I2C_Master_Send,\
-    U_Config_##SCIx##_I2C_Master_Send_UWT,\
+    U_Config_##SCIx##_I2C_Master_Send_Ex,\
+    U_Config_##SCIx##_I2C_Master_Receive_IT,\
     U_Config_##SCIx##_I2C_Master_Receive,\
-    U_Config_##SCIx##_I2C_Master_Receive_UWT,\
+    U_Config_##SCIx##_I2C_Master_Receive_Ex,\
 \
     u_Config_ext_header_file_Just_for_Balancing\
 )
 
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI0  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI1  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI2  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI3  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI4  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI5  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI6  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI7  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI8  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI9  );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI10 );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI11 );
-U_CONFIG_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI12 );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI0  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI1  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI2  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI3  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI4  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI5  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI6  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI7  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI8  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI9  );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI10 );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI11 );
+U_CONFIG_SCI_I2C_MASTER_PROTO_INTERMEDIATE_STEP( SCI12 );
 
 /****************************************************************************/
-/****************************************************************************/
-
-R_BSP_PRAGMA_STATIC_INLINE_ASM( u_Config_wait_for_write_access_completion_helper )
-void u_Config_wait_for_write_access_completion_helper( void )
-{
-    /* Nothing to do. */
-}
 
 #define u_Config_wait_for_write_access_completion( written_register, written_value )\
     do{\
+        /* Not only reading the register but also using the read date are necessary. */\
         if ((written_value) == (written_register))\
         {\
-            /* Probably come here. */\
-            u_Config_wait_for_write_access_completion_helper();\
+            /* Just for preventing the comparsion getting optimized away. */\
+            R_BSP_NOP();\
         }\
     }while (0)
 
-/****************************************************************************/
 /****************************************************************************/
 
 #define U_CONFIG_SCI0_TXINT  _SCI0_TXI0
@@ -587,17 +690,16 @@ void u_Config_wait_for_write_access_completion_helper( void )
 #define U_CONFIG_SCI12_RXINT _SCI12_RXI12
 
 /****************************************************************************/
-/****************************************************************************/
 
 #define U_CONFIG_SCI_CALLBACK_TRANSMITEND( SCIx )\
     do{\
-        extern void u_Config_##SCIx##_callback_transmitend( void );\
+        U_CONFIG_EXTERN_C void u_Config_##SCIx##_callback_transmitend( void );\
         u_Config_##SCIx##_callback_transmitend();\
         r_Config_##SCIx##_callback_transmitend();\
     }while (0)
 #define U_CONFIG_SCI_CALLBACK_RECEIVEEND( SCIx )\
     do{\
-        extern void u_Config_##SCIx##_callback_receiveend( void );\
+        U_CONFIG_EXTERN_C void u_Config_##SCIx##_callback_receiveend( void );\
         u_Config_##SCIx##_callback_receiveend();\
         r_Config_##SCIx##_callback_receiveend();\
     }while (0)
@@ -734,5 +836,9 @@ void u_Config_wait_for_write_access_completion_helper( void )
 #define r_Config_SCI12_callback_receiveendXXX()      U_CONFIG_SCI12_CALLBACK_RECEIVEEND()
 
 #endif /* (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined(__cplusplus) && (__cplusplus >= 201103L)) */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

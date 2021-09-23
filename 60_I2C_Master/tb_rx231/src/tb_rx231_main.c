@@ -31,16 +31,16 @@ int main(void)
 
     U_Config_I2C_Master_Start( SCI1 );
 
-    U_Config_I2C_Master_Send_UWT( SCI1, adr7_ISL29034, cmd_read_ID, sizeof(cmd_read_ID) );
-    U_Config_I2C_Master_Receive_UWT( SCI1, adr7_ISL29034, ret_data1, sizeof(ret_data1) );
+    U_Config_I2C_Master_Send_Ex( SCI1, adr7_ISL29034, cmd_read_ID, sizeof(cmd_read_ID), MD_WAIT_FINISH );
+    U_Config_I2C_Master_Receive_Ex( SCI1, adr7_ISL29034, ret_data1, sizeof(ret_data1), MD_WAIT_FINISH );
     printf( "Read the initial value of the ID register:        " );
     printf( "(val & 0xA8) = 0x%02X (expected: 0xA8)\r\n\r\n", ret_data1[0] & 0xA8 );
 
-    U_Config_I2C_Master_Send_UWT( SCI1, adr7_ISL29034, cmd_clr_BOUT, sizeof(cmd_clr_BOUT) );
+    U_Config_I2C_Master_Send_Ex( SCI1, adr7_ISL29034, cmd_clr_BOUT, sizeof(cmd_clr_BOUT), MD_WAIT_FINISH );
     printf( "Clear the BOUT bit (the bit7 of the ID register).\r\n\r\n" );
 
-    U_Config_I2C_Master_Send_UWT( SCI1, adr7_ISL29034, cmd_read_ID, sizeof(cmd_read_ID) );
-    U_Config_I2C_Master_Receive_UWT( SCI1, adr7_ISL29034, ret_data2, sizeof(ret_data2) );
+    U_Config_I2C_Master_Send_Ex( SCI1, adr7_ISL29034, cmd_read_ID, sizeof(cmd_read_ID), MD_WAIT_FINISH );
+    U_Config_I2C_Master_Receive_Ex( SCI1, adr7_ISL29034, ret_data2, sizeof(ret_data2), MD_WAIT_FINISH );
     printf( "Read again the value of the ID register:          " );
     printf( "(val & 0xA8) = 0x%02X (expected: 0x28)\r\n\r\n", ret_data2[0] & 0xA8 );
 
