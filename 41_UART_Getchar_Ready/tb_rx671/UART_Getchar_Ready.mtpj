@@ -47,7 +47,7 @@
       <ParentItem>3da029ce-f32f-4b28-a2b1-2e15c31ead31</ParentItem>
     </Instance>
     <Instance Guid="e35e9b95-4c90-44e8-9f74-0bc3cba75ed1">
-      <Name>Config_SCI1</Name>
+      <Name>Config_SCI5</Name>
       <Type>Category</Type>
       <ParentItem>3da029ce-f32f-4b28-a2b1-2e15c31ead31</ParentItem>
     </Instance>
@@ -93,23 +93,23 @@
       <ParentItem>e831398f-8962-4928-906c-e4d2d8b4fcb0</ParentItem>
     </Instance>
     <Instance Guid="427fba6b-fa2a-43ff-9491-58294fec6c2d">
-      <Name>Config_SCI1.c</Name>
+      <Name>Config_SCI5.c</Name>
       <Type>File</Type>
-      <RelativePath>src\smc_gen\Config_SCI1\Config_SCI1.c</RelativePath>
+      <RelativePath>src\smc_gen\Config_SCI5\Config_SCI5.c</RelativePath>
       <TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid>
       <ParentItem>e35e9b95-4c90-44e8-9f74-0bc3cba75ed1</ParentItem>
     </Instance>
     <Instance Guid="45fb524d-1d75-4b0b-912d-e5488fd49b30">
-      <Name>Config_SCI1.h</Name>
+      <Name>Config_SCI5.h</Name>
       <Type>File</Type>
-      <RelativePath>src\smc_gen\Config_SCI1\Config_SCI1.h</RelativePath>
+      <RelativePath>src\smc_gen\Config_SCI5\Config_SCI5.h</RelativePath>
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>e35e9b95-4c90-44e8-9f74-0bc3cba75ed1</ParentItem>
     </Instance>
     <Instance Guid="ba17afd3-5209-47a1-811e-4498bea0c8bb">
-      <Name>Config_SCI1_user.c</Name>
+      <Name>Config_SCI5_user.c</Name>
       <Type>File</Type>
-      <RelativePath>src\smc_gen\Config_SCI1\Config_SCI1_user.c</RelativePath>
+      <RelativePath>src\smc_gen\Config_SCI5\Config_SCI5_user.c</RelativePath>
       <TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid>
       <ParentItem>e35e9b95-4c90-44e8-9f74-0bc3cba75ed1</ParentItem>
     </Instance>
@@ -282,15 +282,15 @@
       <ParentItem>a29b4abd-ec28-48db-8bb9-d91b5875b512</ParentItem>
     </Instance>
     <Instance Guid="cfe7aeb6-166b-4703-a00e-456ca0d9b3fe">
-      <Name>r01an1685ej0611-rx-bsp.pdf</Name>
+      <Name>r01an1685ej0620-rx-bsp.pdf</Name>
       <Type>File</Type>
-      <RelativePath>src\smc_gen\r_bsp\doc\en\r01an1685ej0611-rx-bsp.pdf</RelativePath>
+      <RelativePath>src\smc_gen\r_bsp\doc\en\r01an1685ej0620-rx-bsp.pdf</RelativePath>
       <ParentItem>0faa0af5-bd0b-485a-8911-82c95a53738a</ParentItem>
     </Instance>
     <Instance Guid="1f765635-8148-46b6-8a82-98a78ebdebc2">
-      <Name>r01an1685jj0611-rx-bsp.pdf</Name>
+      <Name>r01an1685jj0620-rx-bsp.pdf</Name>
       <Type>File</Type>
-      <RelativePath>src\smc_gen\r_bsp\doc\ja\r01an1685jj0611-rx-bsp.pdf</RelativePath>
+      <RelativePath>src\smc_gen\r_bsp\doc\ja\r01an1685jj0620-rx-bsp.pdf</RelativePath>
       <ParentItem>76a80a75-8b18-40ee-9a51-4a491488c016</ParentItem>
     </Instance>
     <Instance Guid="93c1bd5f-6490-4550-ae3e-a15be16e1119">
@@ -310,7 +310,7 @@
       <TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid>
       <ParentItem>93c1bd5f-6490-4550-ae3e-a15be16e1119</ParentItem>
     </Instance>
-    <Instance Guid="1e120f26-7764-4f06-84b7-185a7e665300">
+    <Instance Guid="7ab9f66d-fe0a-4233-9e8a-13999eabe178">
       <Name>fsp_common_api.h</Name>
       <Type>File</Type>
       <RelativePath>src\smc_gen\r_bsp\mcu\all\fsp_common_api.h</RelativePath>
@@ -429,7 +429,7 @@
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>93c1bd5f-6490-4550-ae3e-a15be16e1119</ParentItem>
     </Instance>
-    <Instance Guid="e9726181-e1f3-4b74-9626-f124413658df">
+    <Instance Guid="4581e1f9-3966-4b22-94f0-b3d081ff3a3a">
       <Name>r_fsp_error.h</Name>
       <Type>File</Type>
       <RelativePath>src\smc_gen\r_bsp\mcu\all\r_fsp_error.h</RelativePath>
@@ -1015,7 +1015,7 @@
       <COptionXcref-0>False</COptionXcref-0>
       <COptionControlFlowIntegrity-0>None</COptionControlFlowIntegrity-0>
       <COptionDebug-0>True</COptionDebug-0>
-      <COptionInclude-0>src\smc_gen\Config_SCI1
+      <COptionInclude-0>src\smc_gen\Config_SCI5
 src\smc_gen\Config_PORT
 src\smc_gen\r_pincfg
 src\smc_gen\r_config
@@ -2230,14 +2230,6 @@ D_1=R_1
       <ItemAddTime>637684261047304612</ItemAddTime>
       <ItemAddTimeCount>2</ItemAddTimeCount>
     </Instance>
-    <Instance Guid="cfe7aeb6-166b-4703-a00e-456ca0d9b3fe">
-      <ItemAddTime>637684261047304612</ItemAddTime>
-      <ItemAddTimeCount>3</ItemAddTimeCount>
-    </Instance>
-    <Instance Guid="1f765635-8148-46b6-8a82-98a78ebdebc2">
-      <ItemAddTime>637684261047314596</ItemAddTime>
-      <ItemAddTimeCount>0</ItemAddTimeCount>
-    </Instance>
     <Instance Guid="3d1dd60e-8aed-4214-9e3a-4ae86f6bc749">
       <ItemAddTime>637684261047384631</ItemAddTime>
       <ItemAddTimeCount>1</ItemAddTimeCount>
@@ -2302,21 +2294,57 @@ D_1=R_1
       <ItemAddTime>637684390731794996</ItemAddTime>
       <ItemAddTimeCount>0</ItemAddTimeCount>
     </Instance>
-    <Instance Guid="427fba6b-fa2a-43ff-9491-58294fec6c2d">
-      <ItemAddTime>637684445926280330</ItemAddTime>
-      <ItemAddTimeCount>0</ItemAddTimeCount>
-    </Instance>
-    <Instance Guid="45fb524d-1d75-4b0b-912d-e5488fd49b30">
-      <ItemAddTime>637684445926280330</ItemAddTime>
-      <ItemAddTimeCount>1</ItemAddTimeCount>
-    </Instance>
-    <Instance Guid="ba17afd3-5209-47a1-811e-4498bea0c8bb">
-      <ItemAddTime>637684445926290309</ItemAddTime>
-      <ItemAddTimeCount>0</ItemAddTimeCount>
-    </Instance>
     <Instance Guid="634fde9b-665b-4f1b-abc6-8a6f65c480e6">
       <ItemAddTime>637684445926310332</ItemAddTime>
       <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="4c0a75fe-fb79-4681-b397-dcbc5a0efd2e">
+      <ItemAddTime>637689460280891329</ItemAddTime>
+      <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="18c1f413-0ea4-416c-a6ad-556ab1fc49ef">
+      <ItemAddTime>637689460280891329</ItemAddTime>
+      <ItemAddTimeCount>1</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="555295bf-b9e8-4a59-863d-633ba6729208">
+      <ItemAddTime>637689460280891329</ItemAddTime>
+      <ItemAddTimeCount>2</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="7b18c7d0-ec0e-4c5f-980b-48250884686b">
+      <ItemAddTime>637689460281516393</ItemAddTime>
+      <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="35cc33e2-4cf9-4be3-af1a-61de090d2a94">
+      <ItemAddTime>637689460281672625</ItemAddTime>
+      <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="427fba6b-fa2a-43ff-9491-58294fec6c2d">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>0</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="45fb524d-1d75-4b0b-912d-e5488fd49b30">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>1</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="ba17afd3-5209-47a1-811e-4498bea0c8bb">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>2</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="cfe7aeb6-166b-4703-a00e-456ca0d9b3fe">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>3</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="1f765635-8148-46b6-8a82-98a78ebdebc2">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>4</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="7ab9f66d-fe0a-4233-9e8a-13999eabe178">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>5</ItemAddTimeCount>
+    </Instance>
+    <Instance Guid="4581e1f9-3966-4b22-94f0-b3d081ff3a3a">
+      <ItemAddTime>637689508745577996</ItemAddTime>
+      <ItemAddTimeCount>6</ItemAddTimeCount>
     </Instance>
     <Instance Guid="a7be515f-f007-45ed-9059-4e1500c0f74d">
       <TimeTagModified-SourceItem0--0>-8585688105536696114</TimeTagModified-SourceItem0--0>
@@ -2331,11 +2359,11 @@ D_1=R_1
       <SourceItem2-IsLockedByUser>False</SourceItem2-IsLockedByUser>
       <SourceItem2-BuildingTarget-0>True</SourceItem2-BuildingTarget-0>
       <SourceItem2-IndividualCompileOption-0>False</SourceItem2-IndividualCompileOption-0>
-      <TimeTagModified-SourceItem3--0>-8585687914928495478</TimeTagModified-SourceItem3--0>
+      <TimeTagModified-SourceItem3--0>-8585682852109197812</TimeTagModified-SourceItem3--0>
       <SourceItem3-IsLockedByUser>False</SourceItem3-IsLockedByUser>
       <SourceItem3-BuildingTarget-0>True</SourceItem3-BuildingTarget-0>
       <SourceItem3-IndividualCompileOption-0>False</SourceItem3-IndividualCompileOption-0>
-      <TimeTagModified-SourceItem4--0>-8585687914928485499</TimeTagModified-SourceItem4--0>
+      <TimeTagModified-SourceItem4--0>-8585682852109197812</TimeTagModified-SourceItem4--0>
       <SourceItem4-IsLockedByUser>False</SourceItem4-IsLockedByUser>
       <SourceItem4-BuildingTarget-0>True</SourceItem4-BuildingTarget-0>
       <SourceItem4-IndividualCompileOption-0>False</SourceItem4-IndividualCompileOption-0>
@@ -2480,8 +2508,8 @@ D_1=R_1
       <DeviceChangedCounter>1</DeviceChangedCounter>
       <DeviceName>R5F5671EHxFP</DeviceName>
       <DebuggerProperty-EssentialProperty-Clock-MainClock>Hoco</DebuggerProperty-EssentialProperty-Clock-MainClock>
-      <DebuggerProperty-EssentialProperty-Clock-MainClockFrequency>150000</DebuggerProperty-EssentialProperty-Clock-MainClockFrequency>
-      <DebuggerProperty-EssentialProperty-Clock-Operatingfrequency>2400000</DebuggerProperty-EssentialProperty-Clock-Operatingfrequency>
+      <DebuggerProperty-EssentialProperty-Clock-MainClockFrequency>240000</DebuggerProperty-EssentialProperty-Clock-MainClockFrequency>
+      <DebuggerProperty-EssentialProperty-Clock-Operatingfrequency>1200000</DebuggerProperty-EssentialProperty-Clock-Operatingfrequency>
       <DebuggerProperty-EssentialProperty-Clock-AllowChangeClock>Yes</DebuggerProperty-EssentialProperty-Clock-AllowChangeClock>
       <DebuggerProperty-EssentialProperty-TargetConnect-TargetSupplyPower>No</DebuggerProperty-EssentialProperty-TargetConnect-TargetSupplyPower>
       <DebuggerProperty-EssentialProperty-TargetConnect-TargetSuppliedVoltage>Use3_3V</DebuggerProperty-EssentialProperty-TargetConnect-TargetSuppliedVoltage>
@@ -2774,7 +2802,7 @@ D_1=R_1
       <DebuggerProperty-OptionalProperty-Memory-MemoryMappings-MemoryMapItem23-FieldInformation>None</DebuggerProperty-OptionalProperty-Memory-MemoryMappings-MemoryMapItem23-FieldInformation>
       <DebuggerProperty-OptionalProperty-Memory-MemoryMappings-MemoryMapItem23-Endian>Little</DebuggerProperty-OptionalProperty-Memory-MemoryMappings-MemoryMapItem23-Endian>
       <DebuggerProperty-OptionalProperty-Memory-MemoryMappings-MemoryMapItem23-EndianMCUSetting>Same</DebuggerProperty-OptionalProperty-Memory-MemoryMappings-MemoryMapItem23-EndianMCUSetting>
-      <DebuggerProperty-OptionalProperty-Memory-VerifyCheck>No</DebuggerProperty-OptionalProperty-Memory-VerifyCheck>
+      <DebuggerProperty-OptionalProperty-Memory-VerifyCheck>Yes</DebuggerProperty-OptionalProperty-Memory-VerifyCheck>
       <DebuggerProperty-OptionalProperty-MemoryAccess-PermitToStopAndRead>No</DebuggerProperty-OptionalProperty-MemoryAccess-PermitToStopAndRead>
       <DebuggerProperty-OptionalProperty-AccessMemory-UpdateDisplayInExecution>No</DebuggerProperty-OptionalProperty-AccessMemory-UpdateDisplayInExecution>
       <DebuggerProperty-OptionalProperty-AccessMemory-UpdateInterval>500</DebuggerProperty-OptionalProperty-AccessMemory-UpdateInterval>
@@ -2803,7 +2831,7 @@ D_1=R_1
       <DebuggerProperty-OptionalProperty-Trace-OutputEventNo>No</DebuggerProperty-OptionalProperty-Trace-OutputEventNo>
       <DebuggerProperty-OptionalProperty-Trace-CountSourceDivisionRatio>DivisionBy_1</DebuggerProperty-OptionalProperty-Trace-CountSourceDivisionRatio>
       <DebuggerProperty-OptionalProperty-Timer-Use64bitCounter>No</DebuggerProperty-OptionalProperty-Timer-Use64bitCounter>
-      <DebuggerProperty-OptionalProperty-Timer-Operatingfrequency>2400000</DebuggerProperty-OptionalProperty-Timer-Operatingfrequency>
+      <DebuggerProperty-OptionalProperty-Timer-Operatingfrequency>1200000</DebuggerProperty-OptionalProperty-Timer-Operatingfrequency>
       <DebuggerProperty-OptionalProperty-Coverage-UseCoverage>No</DebuggerProperty-OptionalProperty-Coverage-UseCoverage>
       <DebuggerProperty-OptionalProperty-Coverage-CoverageOutput>ExternalCoverageCpuExecution</DebuggerProperty-OptionalProperty-Coverage-CoverageOutput>
       <DebuggerProperty-OptionalProperty-Coverage-CoverageAreaAddresses-Length>4</DebuggerProperty-OptionalProperty-Coverage-CoverageAreaAddresses-Length>

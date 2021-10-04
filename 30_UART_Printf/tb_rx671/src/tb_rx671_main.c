@@ -10,7 +10,11 @@
 #include "r_smc_entry.h"
 #include "tbrx671def.h"
 
-U_CONFIG_UART_PRINTF_IMPL( SCI1, 128 /* transmit buffer size */ );
+// Note
+// 1. This example uses MCU's SCI5 (TxD5 = Pmod's Pin4)
+//    and the UART is configured with 9600 baud.
+
+U_CONFIG_UART_PRINTF_IMPL( SCI5, 128 /* transmit buffer size */ );
 
 int main(void)
 {
@@ -18,7 +22,7 @@ int main(void)
 
     for (;;)
     {
-        Printf( SCI1, "Hello World\r\n" );
+        Printf( SCI5, "Hello World\r\n" );
 
         R_BSP_SoftwareDelay( 1000, BSP_DELAY_MILLISECS );
         LED0 = ~LED0;

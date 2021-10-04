@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_hardware_setup.c
-* Version      : 1.0.2
-* Device(s)    : R5F5671EHxFP
-* Description  : Initialization file for code generation configurations.
+* File Name        : r_cg_hardware_setup.c
+* Version          : 1.0.3
+* Device(s)        : R5F5671EHxFP
+* Description      : Initialization file for code generation configurations.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -35,7 +35,7 @@ Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
 #include "Config_PORT.h"
-#include "Config_SCI1.h"
+#include "Config_SCI5.h"
 #include "r_smc_cgc.h"
 #include "r_smc_interrupt.h"
 /* Start user code for include. Do not edit comment generated here */
@@ -85,7 +85,7 @@ void R_Systeminit(void)
 
     /* Set peripheral settings */
     R_Config_PORT_Create();
-    R_Config_SCI1_Create();
+    R_Config_SCI5_Create();
 
     /* Set interrupt settings */
     R_Interrupt_Create();
@@ -93,8 +93,8 @@ void R_Systeminit(void)
     /* Register undefined interrupt */
     R_BSP_InterruptWrite(BSP_INT_SRC_UNDEFINED_INTERRUPT,(bsp_int_cb_t)r_undefined_exception);
 
-    /* Register group BL0 interrupt TEI1 (SCI1) */
-    R_BSP_InterruptWrite(BSP_INT_SRC_BL0_SCI1_TEI1,(bsp_int_cb_t)r_Config_SCI1_transmitend_interrupt);
+    /* Register group BL0 interrupt TEI5 (SCI5) */
+    R_BSP_InterruptWrite(BSP_INT_SRC_BL0_SCI5_TEI5,(bsp_int_cb_t)r_Config_SCI5_transmitend_interrupt);
 
     /* Disable writing to MPC pin function control registers */
     MPC.PWPR.BIT.PFSWE = 0U;

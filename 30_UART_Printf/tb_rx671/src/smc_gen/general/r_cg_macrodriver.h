@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_macrodriver.h
-* Version      : 1.0.2
-* Device(s)    : R5F5671EHxFP
-* Description  : Macro header file for code generation.
+* File Name        : r_cg_macrodriver.h
+* Version          : 1.0.3
+* Device(s)        : R5F5671EHxFP
+* Description      : Macro header file for code generation.
 ***********************************************************************************************************************/
 
 #ifndef MACRODRIVER_H

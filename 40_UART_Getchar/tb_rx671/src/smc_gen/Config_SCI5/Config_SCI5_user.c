@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : Config_SCI1.c
-* Version      : 1.10.0
-* Device(s)    : R5F5671EHxFP
-* Description  : This file implements device driver for Config_SCI1.
+* File Name        : Config_SCI5_user.c
+* Component Version: 1.11.0
+* Device(s)        : R5F5671EHxFP
+* Description      : This file implements device driver for Config_SCI5.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -34,7 +34,7 @@ Pragma directive
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "Config_SCI1.h"
+#include "Config_SCI5.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -42,125 +42,127 @@ Includes
 /***********************************************************************************************************************
 Global variables and functions
 ***********************************************************************************************************************/
-volatile uint8_t * gp_sci1_tx_address;                /* SCI1 transmit buffer address */
-volatile uint16_t  g_sci1_tx_count;                   /* SCI1 transmit data number */
+extern volatile uint8_t * gp_sci5_tx_address;                /* SCI5 transmit buffer address */
+extern volatile uint16_t  g_sci5_tx_count;                   /* SCI5 transmit data number */
+extern volatile uint8_t * gp_sci5_rx_address;                /* SCI5 receive buffer address */
+extern volatile uint16_t  g_sci5_rx_count;                   /* SCI5 receive data number */
+extern volatile uint16_t  g_sci5_rx_length;                  /* SCI5 receive data length */
 /* Start user code for global. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
-* Function Name: R_Config_SCI1_Create
-* Description  : This function initializes the SCI1 channel
+* Function Name: R_Config_SCI5_Create_UserInit
+* Description  : This function adds user code after initializing the SCI5 channel
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
 
-void R_Config_SCI1_Create(void)
+void R_Config_SCI5_Create_UserInit(void)
 {
-    /* Cancel SCI stop state */
-    MSTP(SCI1) = 0U;
-
-    /* Set interrupt priority */
-    IPR(SCI1, TXI1) = _0F_SCI_PRIORITY_LEVEL15;
-
-    /* Clear the control register */
-    SCI1.SCR.BYTE = 0x00U;
-
-    /* Set clock enable */
-    SCI1.SCR.BYTE = _00_SCI_INTERNAL_SCK_UNUSED;
-
-    /* Clear the SIMR1.IICM, SPMR.CKPH, and CKPOL bit, and set SPMR */
-    SCI1.SIMR1.BIT.IICM = 0U;
-    SCI1.SPMR.BYTE = _00_SCI_RTS | _00_SCI_CLOCK_NOT_INVERTED | _00_SCI_CLOCK_NOT_DELAYED;
-
-    /* Set control registers */
-    SCI1.SMR.BYTE = _00_SCI_CLOCK_PCLK | _00_SCI_MULTI_PROCESSOR_DISABLE | _00_SCI_STOP_1 | _00_SCI_PARITY_DISABLE | 
-                    _00_SCI_DATA_LENGTH_8 | _00_SCI_ASYNCHRONOUS_OR_I2C_MODE;
-    SCI1.SCMR.BYTE = _00_SCI_SERIAL_MODE | _00_SCI_DATA_INVERT_NONE | _00_SCI_DATA_LSB_FIRST | 
-                     _10_SCI_DATA_LENGTH_8_OR_7 | _62_SCI_SCMR_DEFAULT;
-    SCI1.SEMR.BYTE = _00_SCI_INSTANT_TRANSMIT_DISABLE | _00_SCI_BIT_MODULATION_DISABLE | _00_SCI_DEPEND_BGDM_ABCS | 
-                     _00_SCI_16_BASE_CLOCK | _00_SCI_BAUDRATE_SINGLE;
-    SCI1.SPTR.BYTE = _00_SCI_OUT_SIGNAL_NOT_INVERT | _00_SCI_TRANSMIT_TIME_NOT_ADJUST| _03_SCI_SPTR_DEFAULT;
-
-    /* Set bit rate */
-    SCI1.BRR = 0xC2U;
-
-    /* Set TXD1 pin */
-    MPC.P26PFS.BYTE = 0x0AU;
-    PORT2.PODR.BYTE |= 0x40U;
-    PORT2.PDR.BYTE |= 0x40U;
-
-    R_Config_SCI1_Create_UserInit();
+    /* Start user code for user init. Do not edit comment generated here */
+    /* End user code. Do not edit comment generated here */
 }
 
 /***********************************************************************************************************************
-* Function Name: R_Config_SCI1_Start
-* Description  : This function starts the SCI1 channel
+* Function Name: r_Config_SCI5_transmit_interrupt
+* Description  : This function is TXI5 interrupt service routine
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
 
-void R_Config_SCI1_Start(void)
+#if FAST_INTERRUPT_VECTOR == VECT_SCI5_TXI5
+#pragma interrupt r_Config_SCI5_transmit_interrupt(vect=VECT(SCI5,TXI5),fint)
+#else
+#pragma interrupt r_Config_SCI5_transmit_interrupt(vect=VECT(SCI5,TXI5))
+#endif
+static void r_Config_SCI5_transmit_interrupt(void)
 {
-    /* Clear interrupt flag */
-    IR(SCI1, TXI1) = 0U;
-
-    /* Enable SCI interrupt */
-    IEN(SCI1, TXI1) = 1U;
-    ICU.GENBL0.BIT.EN2 = 1U;
-}
-
-/***********************************************************************************************************************
-* Function Name: R_Config_SCI1_Stop
-* Description  : This function stop the SCI1 channel
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-
-void R_Config_SCI1_Stop(void)
-{
-    /* Set TXD1 pin */
-    PORT2.PMR.BYTE &= 0xBFU;
-
-    /* Disable serial transmit */
-    SCI1.SCR.BIT.TE = 0U;
-
-    /* Disable SCI interrupt */
-    SCI1.SCR.BIT.TIE = 0U;
-    IEN(SCI1, TXI1) = 0U;
-    ICU.GENBL0.BIT.EN2 = 0U;
-    IR(SCI1, TXI1) = 0U;
-}
-
-/***********************************************************************************************************************
-* Function Name: R_Config_SCI1_Serial_Send
-* Description  : This function transmits SCI1 data
-* Arguments    : tx_buf -
-*                    transfer buffer pointer (Not used when transmit data handled by DMAC/DTC)
-*                tx_num -
-*                    buffer size (Not used when transmit data handled by DMAC/DTC)
-* Return Value : status -
-*                    MD_OK or MD_ARGERROR
-***********************************************************************************************************************/
-
-MD_STATUS R_Config_SCI1_Serial_Send(uint8_t * const tx_buf, uint16_t tx_num)
-{
-    MD_STATUS status = MD_OK;
-
-    if (1U > tx_num)
+    if (0U < g_sci5_tx_count)
     {
-        status = MD_ARGERROR;
+        SCI5.TDR = *gp_sci5_tx_address;
+        gp_sci5_tx_address++;
+        g_sci5_tx_count--;
     }
     else
     {
-        gp_sci1_tx_address = tx_buf;
-        g_sci1_tx_count = tx_num;
-
-        /* Set TXD1 pin */
-        PORT2.PMR.BYTE |= 0x40U;
-        SCI1.SCR.BYTE |= 0xA0U;
+        SCI5.SCR.BIT.TIE = 0U;
+        SCI5.SCR.BIT.TEIE = 1U;
     }
+}
 
-    return (status);
+/***********************************************************************************************************************
+* Function Name: r_Config_SCI5_transmitend_interrupt
+* Description  : This function is TEI5 interrupt service routine
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+
+void r_Config_SCI5_transmitend_interrupt(void)
+{
+    /* Set TXD5 pin */
+    PORTC.PMR.BYTE &= 0xF7U;
+
+    SCI5.SCR.BIT.TIE = 0U;
+    SCI5.SCR.BIT.TE = 0U;
+    SCI5.SCR.BIT.TEIE = 0U;
+    
+    r_Config_SCI5_callback_transmitend();
+}
+
+/***********************************************************************************************************************
+* Function Name: r_Config_SCI5_receive_interrupt
+* Description  : This function is RXI5 interrupt service routine
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+
+#if FAST_INTERRUPT_VECTOR == VECT_SCI5_RXI5
+#pragma interrupt r_Config_SCI5_receive_interrupt(vect=VECT(SCI5,RXI5),fint)
+#else
+#pragma interrupt r_Config_SCI5_receive_interrupt(vect=VECT(SCI5,RXI5))
+#endif
+static void r_Config_SCI5_receive_interrupt(void)
+{
+    if (g_sci5_rx_length > g_sci5_rx_count)
+    {
+        *gp_sci5_rx_address = SCI5.RDR;
+        gp_sci5_rx_address++;
+        g_sci5_rx_count++;
+    }
+    
+    if (g_sci5_rx_length <= g_sci5_rx_count)
+    {
+        /* All data received */
+        SCI5.SCR.BIT.RIE = 0U;
+        SCI5.SCR.BIT.RE = 0U;
+        r_Config_SCI5_callback_receiveend();
+    }
+}
+
+/***********************************************************************************************************************
+* Function Name: r_Config_SCI5_callback_transmitend
+* Description  : This function is a callback function when SCI5 finishes transmission
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+
+static void r_Config_SCI5_callback_transmitend(void)
+{
+    /* Start user code for r_Config_SCI5_callback_transmitend. Do not edit comment generated here */
+    /* End user code. Do not edit comment generated here */
+}
+
+/***********************************************************************************************************************
+* Function Name: r_Config_SCI5_callback_receiveend
+* Description  : This function is a callback function when SCI5 finishes reception
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+
+static void r_Config_SCI5_callback_receiveend(void)
+{
+    /* Start user code for r_Config_SCI5_callback_receiveend. Do not edit comment generated here */
+    /* End user code. Do not edit comment generated here */
 }
 
 /* Start user code for adding. Do not edit comment generated here */

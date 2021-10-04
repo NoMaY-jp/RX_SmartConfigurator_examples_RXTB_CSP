@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : Config_SCI5.c
-* Version      : 1.10.0
-* Device(s)    : R5F5671EHxFP
-* Description  : This file implements device driver for Config_SCI5.
+* File Name        : Config_SCI5.c
+* Component Version: 1.11.0
+* Device(s)        : R5F5671EHxFP
+* Description      : This file implements device driver for Config_SCI5.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -51,6 +51,10 @@ volatile uint8_t * gp_sci5_rx_address;               /* SCI5 receive buffer addr
 volatile uint16_t  g_sci5_rx_count;                  /* SCI5 receive data number */
 volatile uint16_t  g_sci5_rx_length;                 /* SCI5 receive data length */
 /* Start user code for global. Do not edit comment generated here */
+
+#define R_Config_SCI5_IIC_Master_Send R_Config_SCI5_IIC_Master_Send__unused
+void R_Config_SCI5_IIC_Master_Send__unused(uint8_t adr, uint8_t * const tx_buf, uint16_t tx_num);
+
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
@@ -86,7 +90,7 @@ void R_Config_SCI5_Create(void)
     SCI5.BRR = 0x12U;
     SCI5.SEMR.BYTE = _00_SCI_NOISE_FILTER_DISABLE | _00_SCI_BIT_MODULATION_DISABLE;
     SCI5.SIMR1.BYTE |= (_01_SCI_IIC_MODE | _00_SCI_NONE);
-    SCI5.SIMR2.BYTE |= (_01_SCI_RX_TX_INTERRUPTS | _02_SCI_SYNCHRONIZATION | _20_SCI_NACK_TRANSMISSION);
+    SCI5.SIMR2.BYTE |= (_00_SCI_ACK_NACK_INTERRUPTS | _02_SCI_SYNCHRONIZATION | _20_SCI_NACK_TRANSMISSION);
     SCI5.SPMR.BYTE = _00_SCI_CLOCK_NOT_INVERTED | _00_SCI_CLOCK_NOT_DELAYED;
     SCI5.SCR.BYTE = _10_SCI_RECEIVE_ENABLE | _20_SCI_TRANSMIT_ENABLE | _40_SCI_RXI_ERI_ENABLE | _80_SCI_TXI_ENABLE | 
                     _04_SCI_TEI_INTERRUPT_ENABLE;
@@ -192,9 +196,6 @@ void R_Config_SCI5_IIC_Master_Send(uint8_t adr, uint8_t * const tx_buf, uint16_t
     g_sci5_iic_transmit_receive_flag = _80_SCI_IIC_TRANSMISSION;
     g_sci5_iic_cycle_flag = _80_SCI_IIC_START_CYCLE;
 
-    /* Disable RXI and ERI interrupt requests */
-    SCI5.SCR.BIT.RIE = 0U;
-
     /* Generate start condition */
     R_Config_SCI5_IIC_StartCondition();
 }
@@ -225,13 +226,32 @@ void R_Config_SCI5_IIC_Master_Receive(uint8_t adr, uint8_t * const rx_buf, uint1
     g_sci5_iic_transmit_receive_flag = _00_SCI_IIC_RECEPTION;
     g_sci5_iic_cycle_flag = _80_SCI_IIC_START_CYCLE;
 
-    /* Disable RXI and ERI interrupt requests */
-    SCI5.SCR.BIT.RIE = 0U;
-
     /* Generate start condition */
     R_Config_SCI5_IIC_StartCondition();
 }
 
 /* Start user code for adding. Do not edit comment generated here */
+
+#undef R_Config_SCI5_IIC_Master_Send
+
+void R_Config_SCI5_IIC_Master_Send(uint8_t adr, uint8_t * const tx_buf, uint16_t tx_num)
+{
+#if 0 /* For Renesas HS3001 humidity and temperature sensor (A Renesas QuickConnect IoT Pmod) */
+    if (tx_num < 1U)
+    {
+        return;
+    }
+#endif /* #if 0 */
+
+    gp_sci5_tx_address = tx_buf;
+    g_sci5_tx_count = tx_num;
+    g_sci5_slave_address = adr;
+    g_sci5_iic_transmit_receive_flag = _80_SCI_IIC_TRANSMISSION;
+    g_sci5_iic_cycle_flag = _80_SCI_IIC_START_CYCLE;
+
+    /* Generate start condition */
+    R_Config_SCI5_IIC_StartCondition();
+}
+
 /* End user code. Do not edit comment generated here */
 

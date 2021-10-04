@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : Config_SCI1_user.c
-* Version      : 1.10.0
-* Device(s)    : R5F5671EHxFP
-* Description  : This file implements device driver for Config_SCI1.
+* File Name        : Config_SCI5_user.c
+* Component Version: 1.11.0
+* Device(s)        : R5F5671EHxFP
+* Description      : This file implements device driver for Config_SCI5.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -34,7 +34,7 @@ Pragma directive
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "Config_SCI1.h"
+#include "Config_SCI5.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -42,80 +42,126 @@ Includes
 /***********************************************************************************************************************
 Global variables and functions
 ***********************************************************************************************************************/
-extern volatile uint8_t * gp_sci1_tx_address;                /* SCI1 transmit buffer address */
-extern volatile uint16_t  g_sci1_tx_count;                   /* SCI1 transmit data number */
+extern volatile uint8_t * gp_sci5_tx_address;                /* SCI5 transmit buffer address */
+extern volatile uint16_t  g_sci5_tx_count;                   /* SCI5 transmit data number */
+extern volatile uint8_t * gp_sci5_rx_address;                /* SCI5 receive buffer address */
+extern volatile uint16_t  g_sci5_rx_count;                   /* SCI5 receive data number */
+extern volatile uint16_t  g_sci5_rx_length;                  /* SCI5 receive data length */
 /* Start user code for global. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
-* Function Name: R_Config_SCI1_Create_UserInit
-* Description  : This function adds user code after initializing the SCI1 channel
+* Function Name: R_Config_SCI5_Create_UserInit
+* Description  : This function adds user code after initializing the SCI5 channel
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
 
-void R_Config_SCI1_Create_UserInit(void)
+void R_Config_SCI5_Create_UserInit(void)
 {
     /* Start user code for user init. Do not edit comment generated here */
     /* End user code. Do not edit comment generated here */
 }
 
 /***********************************************************************************************************************
-* Function Name: r_Config_SCI1_transmit_interrupt
-* Description  : This function is TXI1 interrupt service routine
+* Function Name: r_Config_SCI5_transmit_interrupt
+* Description  : This function is TXI5 interrupt service routine
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
 
-#if FAST_INTERRUPT_VECTOR == VECT_SCI1_TXI1
-#pragma interrupt r_Config_SCI1_transmit_interrupt(vect=VECT(SCI1,TXI1),fint)
+#if FAST_INTERRUPT_VECTOR == VECT_SCI5_TXI5
+#pragma interrupt r_Config_SCI5_transmit_interrupt(vect=VECT(SCI5,TXI5),fint)
 #else
-#pragma interrupt r_Config_SCI1_transmit_interrupt(vect=VECT(SCI1,TXI1))
+#pragma interrupt r_Config_SCI5_transmit_interrupt(vect=VECT(SCI5,TXI5))
 #endif
-static void r_Config_SCI1_transmit_interrupt(void)
+static void r_Config_SCI5_transmit_interrupt(void)
 {
-    if (0U < g_sci1_tx_count)
+    if (0U < g_sci5_tx_count)
     {
-        SCI1.TDR = *gp_sci1_tx_address;
-        gp_sci1_tx_address++;
-        g_sci1_tx_count--;
+        SCI5.TDR = *gp_sci5_tx_address;
+        gp_sci5_tx_address++;
+        g_sci5_tx_count--;
     }
     else
     {
-        SCI1.SCR.BIT.TIE = 0U;
-        SCI1.SCR.BIT.TEIE = 1U;
+        SCI5.SCR.BIT.TIE = 0U;
+        SCI5.SCR.BIT.TEIE = 1U;
     }
 }
 
 /***********************************************************************************************************************
-* Function Name: r_Config_SCI1_transmitend_interrupt
-* Description  : This function is TEI1 interrupt service routine
+* Function Name: r_Config_SCI5_transmitend_interrupt
+* Description  : This function is TEI5 interrupt service routine
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
 
-void r_Config_SCI1_transmitend_interrupt(void)
+void r_Config_SCI5_transmitend_interrupt(void)
 {
-    /* Set TXD1 pin */
-    PORT2.PMR.BYTE &= 0xBFU;
+    /* Set TXD5 pin */
+    PORTC.PMR.BYTE &= 0xF7U;
 
-    SCI1.SCR.BIT.TIE = 0U;
-    SCI1.SCR.BIT.TE = 0U;
-    SCI1.SCR.BIT.TEIE = 0U;
+    SCI5.SCR.BIT.TIE = 0U;
+    SCI5.SCR.BIT.TE = 0U;
+    SCI5.SCR.BIT.TEIE = 0U;
     
-    r_Config_SCI1_callback_transmitend();
+    r_Config_SCI5_callback_transmitend();
 }
 
 /***********************************************************************************************************************
-* Function Name: r_Config_SCI1_callback_transmitend
-* Description  : This function is a callback function when SCI1 finishes transmission
+* Function Name: r_Config_SCI5_receive_interrupt
+* Description  : This function is RXI5 interrupt service routine
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
 
-static void r_Config_SCI1_callback_transmitend(void)
+#if FAST_INTERRUPT_VECTOR == VECT_SCI5_RXI5
+#pragma interrupt r_Config_SCI5_receive_interrupt(vect=VECT(SCI5,RXI5),fint)
+#else
+#pragma interrupt r_Config_SCI5_receive_interrupt(vect=VECT(SCI5,RXI5))
+#endif
+static void r_Config_SCI5_receive_interrupt(void)
 {
-    /* Start user code for r_Config_SCI1_callback_transmitend. Do not edit comment generated here */
+    if (g_sci5_rx_length > g_sci5_rx_count)
+    {
+        *gp_sci5_rx_address = SCI5.RDR;
+        gp_sci5_rx_address++;
+        g_sci5_rx_count++;
+    }
+    
+    if (g_sci5_rx_length <= g_sci5_rx_count)
+    {
+        /* All data received */
+        SCI5.SCR.BIT.RIE = 0U;
+        SCI5.SCR.BIT.RE = 0U;
+        r_Config_SCI5_callback_receiveend();
+    }
+}
+
+/***********************************************************************************************************************
+* Function Name: r_Config_SCI5_callback_transmitend
+* Description  : This function is a callback function when SCI5 finishes transmission
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+
+static void r_Config_SCI5_callback_transmitend(void)
+{
+    /* Start user code for r_Config_SCI5_callback_transmitend. Do not edit comment generated here */
+    /* End user code. Do not edit comment generated here */
+}
+
+/***********************************************************************************************************************
+* Function Name: r_Config_SCI5_callback_receiveend
+* Description  : This function is a callback function when SCI5 finishes reception
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+
+static void r_Config_SCI5_callback_receiveend(void)
+{
+    /* Start user code for r_Config_SCI5_callback_receiveend. Do not edit comment generated here */
     /* End user code. Do not edit comment generated here */
 }
 

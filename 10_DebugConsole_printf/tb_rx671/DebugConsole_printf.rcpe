@@ -46,10 +46,10 @@
           </Category>
           <Category Name="doc">
             <Category Name="en">
-              <Path>src\smc_gen\r_bsp\doc\en\r01an1685ej0611-rx-bsp.pdf</Path>
+              <Path>src\smc_gen\r_bsp\doc\en\r01an1685ej0620-rx-bsp.pdf</Path>
             </Category>
             <Category Name="ja">
-              <Path>src\smc_gen\r_bsp\doc\ja\r01an1685jj0611-rx-bsp.pdf</Path>
+              <Path>src\smc_gen\r_bsp\doc\ja\r01an1685jj0620-rx-bsp.pdf</Path>
             </Category>
           </Category>
           <Category Name="mcu">
@@ -118,7 +118,7 @@
     </Files>
     <DebugOptions>
       <ConnectSettings>
-        <MainClock>15000000</MainClock>
+        <MainClock>24000000</MainClock>
       </ConnectSettings>
       <DebugToolSettings />
     </DebugOptions>

@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : Config_SCI5_user.c
-* Version      : 1.10.0
-* Device(s)    : R5F5671EHxFP
-* Description  : This file implements device driver for Config_SCI5.
+* File Name        : Config_SCI5_user.c
+* Component Version: 1.11.0
+* Device(s)        : R5F5671EHxFP
+* Description      : This file implements device driver for Config_SCI5.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -80,42 +80,17 @@ void R_Config_SCI5_Create_UserInit(void)
 #endif
 static void r_Config_SCI5_transmit_interrupt(void)
 {
-    if (0U == SCI5.SISR.BIT.IICACKR)
+    /* Receive last data in master receive mode (ACK/NACK) */
+    if (1U == SCI5.SISR.BIT.IICACKR)
     {
-        if (_80_SCI_IIC_TRANSMISSION == g_sci5_iic_transmit_receive_flag)
-        {
-            if (g_sci5_tx_count > 0U)
-            {
-                SCI5.TDR = *gp_sci5_tx_address;
-                gp_sci5_tx_address++;
-                g_sci5_tx_count--;
-            }
-            else
-            {
-                /* Generate stop condition */
-                g_sci5_iic_cycle_flag = _00_SCI_IIC_STOP_CYCLE;
-                R_Config_SCI5_IIC_StopCondition();
-            }
-        }
-        else if (_00_SCI_IIC_RECEPTION == g_sci5_iic_transmit_receive_flag)
-        {
-            SCI5.SIMR2.BIT.IICACKT = 0U;
-            SCI5.SCR.BIT.RIE = 1U;
-            if (g_sci5_rx_length == (g_sci5_rx_count + 1))
-            {
-                SCI5.SIMR2.BIT.IICACKT = 1U;
-            }
+        *gp_sci5_rx_address = SCI5.RDR;
+        gp_sci5_rx_address++;
+        g_sci5_rx_count++;
+    }
 
-            /* Write dummy */
-            SCI5.TDR = 0xFFU;
-        }
-    }
-    else
-    {
-        /* Generate stop condition */
-        g_sci5_iic_cycle_flag = _00_SCI_IIC_STOP_CYCLE;
-        R_Config_SCI5_IIC_StopCondition();
-    }
+    /* Generate stop condition */
+    g_sci5_iic_cycle_flag = _00_SCI_IIC_STOP_CYCLE;
+    R_Config_SCI5_IIC_StopCondition();
 }
 
 /***********************************************************************************************************************
@@ -167,11 +142,69 @@ void r_Config_SCI5_transmitend_interrupt(void)
 #endif
 static void r_Config_SCI5_receive_interrupt(void)
 {
-    if (g_sci5_rx_length > g_sci5_rx_count)
+    volatile uint8_t dummy;
+
+    if (0U == SCI5.SISR.BIT.IICACKR)
     {
-        *gp_sci5_rx_address = SCI5.RDR;
-        gp_sci5_rx_address++;
-        g_sci5_rx_count++;
+        if (_80_SCI_IIC_TRANSMISSION == g_sci5_iic_transmit_receive_flag)
+        {
+            if (g_sci5_tx_count > 0U)
+            {
+                SCI5.TDR = *gp_sci5_tx_address;
+                gp_sci5_tx_address++;
+                g_sci5_tx_count--;
+            }
+            else
+            {
+                /* Generate stop condition */
+                g_sci5_iic_cycle_flag = _00_SCI_IIC_STOP_CYCLE;
+                R_Config_SCI5_IIC_StopCondition();
+            }
+        }
+        else if (_00_SCI_IIC_RECEPTION == g_sci5_iic_transmit_receive_flag)
+        {
+            if (0U == SCI5.SIMR2.BIT.IICACKT)
+            {
+                if (g_sci5_rx_length > g_sci5_rx_count)
+                {
+                    *gp_sci5_rx_address = SCI5.RDR;
+                    gp_sci5_rx_address++;
+                    g_sci5_rx_count++;
+                }
+            }
+            else
+            {
+                dummy = SCI5.RDR;
+            }
+
+            if (0U == g_sci5_rx_count)
+            {
+                if(1U == g_sci5_rx_length)
+                {
+                    SCI5.SIMR2.BIT.IICACKT = 1U;
+                }
+                else
+                {
+                    SCI5.SIMR2.BIT.IICACKT = 0U; 
+                    SCI5.SCR.BIT.RIE = 1U;
+                }
+            }
+            else if (g_sci5_rx_length == (g_sci5_rx_count + 1))
+            {
+                 SCI5.SIMR2.BIT.IICACKT = 1U;
+            }
+            else
+            {
+                /* Do nothing */
+            }
+
+            /* Write dummy */
+            SCI5.TDR = 0xFFU;
+        }
+        else
+        {
+            /* Do nothing */
+        }
     }
     else
     {

@@ -18,10 +18,10 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : Config_PORT.c
-* Version      : 2.2.0
-* Device(s)    : R5F5671EHxFP
-* Description  : This file implements device driver for Config_PORT.
+* File Name        : Config_PORT.c
+* Component Version: 2.3.0
+* Device(s)        : R5F5671EHxFP
+* Description      : This file implements device driver for Config_PORT.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -56,19 +56,12 @@ void R_Config_PORT_Create(void)
 {
     /* Set PORT3 registers */
     PORT3.PODR.BYTE = _04_Pm2_OUTPUT_1 | _08_Pm3_OUTPUT_1;
-    PORT3.ODR0.BYTE = _00_Pm0_CMOS_OUTPUT | _00_Pm1_CMOS_OUTPUT | _00_Pm2_CMOS_OUTPUT | _00_Pm3_CMOS_OUTPUT;
-    PORT3.ODR1.BYTE = _00_Pm4_CMOS_OUTPUT | _00_Pm6_CMOS_OUTPUT | _00_Pm7_CMOS_OUTPUT;
+    PORT3.ODR0.BYTE = _00_Pm0_CMOS_OUTPUT | _00_Pm1_CMOS_OUTPUT | _10_Pm2_NCH_OPEN_DRAIN | _40_Pm3_NCH_OPEN_DRAIN;
+    PORT3.ODR1.BYTE = _00_Pm6_CMOS_OUTPUT | _00_Pm7_CMOS_OUTPUT;
+    PORT3.PCR.BYTE = _10_Pm4_PULLUP_ON;
     PORT3.DSCR2.BYTE = _00_Pm0_HISPEED_OFF | _00_Pm1_HISPEED_OFF;
-    PORT3.PMR.BYTE = _00_Pm2_PIN_GPIO | _00_Pm3_PIN_GPIO;
-    PORT3.PDR.BYTE = _04_Pm2_MODE_OUTPUT | _08_Pm3_MODE_OUTPUT;
-
-    /* Set PORTB registers */
-    PORTB.ODR0.BYTE = _00_Pm0_CMOS_OUTPUT | _00_Pm1_CMOS_OUTPUT | _00_Pm2_CMOS_OUTPUT | _00_Pm3_CMOS_OUTPUT;
-    PORTB.ODR1.BYTE = _00_Pm4_CMOS_OUTPUT | _00_Pm5_CMOS_OUTPUT | _00_Pm6_CMOS_OUTPUT | _00_Pm7_CMOS_OUTPUT;
-    PORTB.DSCR.BYTE = _00_Pm0_HIDRV_OFF | _00_Pm1_HIDRV_OFF | _00_Pm2_HIDRV_OFF | _00_Pm3_HIDRV_OFF | 
-                      _00_Pm4_HIDRV_OFF | _00_Pm5_HIDRV_OFF | _00_Pm6_HIDRV_OFF | _00_Pm7_HIDRV_OFF;
-    PORTB.DSCR2.BYTE = _00_Pm0_HISPEED_OFF | _00_Pm1_HISPEED_OFF | _00_Pm2_HISPEED_OFF | _00_Pm3_HISPEED_OFF | 
-                       _00_Pm4_HISPEED_OFF | _00_Pm5_HISPEED_OFF | _00_Pm6_HISPEED_OFF | _00_Pm7_HISPEED_OFF;
+    PORT3.PMR.BYTE = _00_Pm2_PIN_GPIO | _00_Pm3_PIN_GPIO | _00_Pm4_PIN_GPIO;
+    PORT3.PDR.BYTE = _04_Pm2_MODE_OUTPUT | _08_Pm3_MODE_OUTPUT | _00_Pm4_MODE_INPUT;
 
     R_Config_PORT_Create_UserInit();
 }

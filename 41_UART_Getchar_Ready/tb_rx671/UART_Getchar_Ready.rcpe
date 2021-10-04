@@ -18,10 +18,10 @@
           <Path>src\smc_gen\Config_PORT\Config_PORT.h</Path>
           <Path>src\smc_gen\Config_PORT\Config_PORT_user.c</Path>
         </Category>
-        <Category Name="Config_SCI1">
-          <Path>src\smc_gen\Config_SCI1\Config_SCI1.c</Path>
-          <Path>src\smc_gen\Config_SCI1\Config_SCI1.h</Path>
-          <Path>src\smc_gen\Config_SCI1\Config_SCI1_user.c</Path>
+        <Category Name="Config_SCI5">
+          <Path>src\smc_gen\Config_SCI5\Config_SCI5.c</Path>
+          <Path>src\smc_gen\Config_SCI5\Config_SCI5.h</Path>
+          <Path>src\smc_gen\Config_SCI5\Config_SCI5_user.c</Path>
         </Category>
         <Category Name="general">
           <Path>src\smc_gen\general\r_cg_hardware_setup.c</Path>
@@ -53,10 +53,10 @@
           </Category>
           <Category Name="doc">
             <Category Name="en">
-              <Path>src\smc_gen\r_bsp\doc\en\r01an1685ej0611-rx-bsp.pdf</Path>
+              <Path>src\smc_gen\r_bsp\doc\en\r01an1685ej0620-rx-bsp.pdf</Path>
             </Category>
             <Category Name="ja">
-              <Path>src\smc_gen\r_bsp\doc\ja\r01an1685jj0611-rx-bsp.pdf</Path>
+              <Path>src\smc_gen\r_bsp\doc\ja\r01an1685jj0620-rx-bsp.pdf</Path>
             </Category>
           </Category>
           <Category Name="mcu">
@@ -125,7 +125,7 @@
     </Files>
     <DebugOptions>
       <ConnectSettings>
-        <MainClock>15000000</MainClock>
+        <MainClock>24000000</MainClock>
       </ConnectSettings>
       <DebugToolSettings />
     </DebugOptions>
@@ -140,7 +140,7 @@
           <Option>-fpu</Option>
           <Option>-dpfpu</Option>
           <Option>-lang=c99</Option>
-          <Option>-include=src\smc_gen\Config_SCI1</Option>
+          <Option>-include=src\smc_gen\Config_SCI5</Option>
           <Option>-include=src\smc_gen\Config_PORT</Option>
           <Option>-include=src\smc_gen\r_pincfg</Option>
           <Option>-include=src\smc_gen\r_config</Option>
@@ -236,11 +236,11 @@
           <Path>DefaultBuild\tb_rx671_main.obj</Path>
           <Path>DefaultBuild\Config_PORT.obj</Path>
           <Path>DefaultBuild\Config_PORT_user.obj</Path>
-          <Path>DefaultBuild\Config_SCI1.obj</Path>
-          <Path>DefaultBuild\Config_SCI1_user.obj</Path>
+          <Path>DefaultBuild\Config_SCI5.obj</Path>
+          <Path>DefaultBuild\Config_SCI5_user.obj</Path>
         </LinkOrder>
         <CommonOptions>
-          <IncludePathForC>src\smc_gen\Config_SCI1</IncludePathForC>
+          <IncludePathForC>src\smc_gen\Config_SCI5</IncludePathForC>
           <IncludePathForC>src\smc_gen\Config_PORT</IncludePathForC>
           <IncludePathForC>src\smc_gen\r_pincfg</IncludePathForC>
           <IncludePathForC>src\smc_gen\r_config</IncludePathForC>

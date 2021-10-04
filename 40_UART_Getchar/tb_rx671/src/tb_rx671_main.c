@@ -10,8 +10,12 @@
 #include "r_smc_entry.h"
 #include "tbrx671def.h"
 
-U_CONFIG_UART_PRINTF_IMPL(  SCI1, 128 /* transmit buffer size */ );
-U_CONFIG_UART_GETCHAR_IMPL( SCI1, 128 /* receive ring buffer size */ );
+// Note
+// 1. This example uses MCU's SCI5 (TxD5/RxD5 = Pmod's Pin4/Pin3)
+//    and the UART is configured with 9600 baud.
+
+U_CONFIG_UART_PRINTF_IMPL(  SCI5, 128 /* transmit buffer size */ );
+U_CONFIG_UART_GETCHAR_IMPL( SCI5, 128 /* receive ring buffer size */ );
 
 int main(void)
 {
@@ -19,10 +23,10 @@ int main(void)
 
     for (;;)
     {
-        Printf( SCI1, "Please enter a character:\r\n" );
+        Printf( SCI5, "Please enter a character:\r\n" );
 
-        c = Getchar( SCI1 );
+        c = Getchar( SCI5 );
 
-        Printf( SCI1, "\r\nNow %c is entered.\r\n\r\n", c );
+        Printf( SCI5, "\r\nNow %c is entered.\r\n\r\n", c );
     }
 }
