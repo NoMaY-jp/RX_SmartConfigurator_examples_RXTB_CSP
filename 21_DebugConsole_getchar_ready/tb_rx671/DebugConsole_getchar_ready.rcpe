@@ -247,7 +247,7 @@
     </BuildOptions>
     <Extension_SmcCodePart>
       <CodeGeneratorData></CodeGeneratorData>
-      <GenerateFileFolder>C:\Renesas\FreeRTOS\Demo\RX600_RX671_EnvisionKit_Renesas_e2studio_CS+</GenerateFileFolder>
+      <GenerateFileFolder>C:\Renesas\FreeRTOS\Demo\RX600_RX671_TB_Renesas_e2studio_CS+</GenerateFileFolder>
       <SCFGFile>SmartConfigurator.scfg</SCFGFile>
       <SmcExePath>C:\Renesas\SmartConfigurator\RX\eclipse\SmartConfigurator.exe</SmcExePath>
       <CodeGeneratorFilesGuid>3da029ce-f32f-4b28-a2b1-2e15c31ead31</CodeGeneratorFilesGuid>

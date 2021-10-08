@@ -13,7 +13,7 @@
 
 // Note
 // 1. This example uses MCU's SCI5 (SSCL5/SSDA5 = Pmod's Pin3/Pin4)
-//    and the UART is configured with 9600 baud.
+// 2. HS3001 data sheet's I2C command format needs modification of Config_SCI5.c
 
 U_CONFIG_I2C_MASTER_IMPL( SCI5 );
 
