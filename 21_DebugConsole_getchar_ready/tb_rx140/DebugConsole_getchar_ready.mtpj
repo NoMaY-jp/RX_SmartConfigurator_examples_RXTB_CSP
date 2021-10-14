@@ -782,11 +782,11 @@
       <EnsureCompatibilityOfPathAndLinkageOrder-0>False</EnsureCompatibilityOfPathAndLinkageOrder-0>
       <GeneralOptionDpfpu-0>Dpfpu</GeneralOptionDpfpu-0>
       <LinkOptionConvertFileName-0>%ProjectName%.mot</LinkOptionConvertFileName-0>
-      <AsmOptionGoptimize-0>False</AsmOptionGoptimize-0>
+      <AsmOptionGoptimize-0>True</AsmOptionGoptimize-0>
       <GeneralOptionEndian-0>Little</GeneralOptionEndian-0>
       <LinkOptionMultiConvertFileName-0 />
       <AsmOptionListFile-0>True</AsmOptionListFile-0>
-      <COptionGoptimize-0>False</COptionGoptimize-0>
+      <COptionGoptimize-0>True</COptionGoptimize-0>
       <GeneralOptionRound-0>Nearest</GeneralOptionRound-0>
       <AsmOptionShowConditionals-0>False</AsmOptionShowConditionals-0>
       <GeneralOptionDenormalize-0>Off</GeneralOptionDenormalize-0>
@@ -932,7 +932,7 @@
       <COptionOutputAssembly-0>False</COptionOutputAssembly-0>
       <COptionOutputDepOrOutputObj-0>-output=obj</COptionOutputDepOrOutputObj-0>
       <COptionStackProtector-0>None</COptionStackProtector-0>
-      <COptionGoptimize-0>False</COptionGoptimize-0>
+      <COptionGoptimize-0>True</COptionGoptimize-0>
       <COptionLangCpp-0>Cpp</COptionLangCpp-0>
       <COptionMisra2004-0>None</COptionMisra2004-0>
       <COptionOutputFolder-0>%BuildModeName%</COptionOutputFolder-0>
@@ -1059,7 +1059,7 @@ src
       <IsLockedByUser>False</IsLockedByUser>
       <TimeTagModified--0>-8586075486978048352</TimeTagModified--0>
       <AsmOptionChkpm-0>False</AsmOptionChkpm-0>
-      <AsmOptionGoptimize-0>False</AsmOptionGoptimize-0>
+      <AsmOptionGoptimize-0>True</AsmOptionGoptimize-0>
       <AsmOptionInclude-0 />
       <AsmOptionListFile-0>True</AsmOptionListFile-0>
       <AsmOptionMMOrOutput-0>-output</AsmOptionMMOrOutput-0>
@@ -1175,9 +1175,9 @@ D_2=R_2
       <LinkOptionFormConvert-0>Stype</LinkOptionFormConvert-0>
       <LinkOptionInput-0 />
       <LinkOptionListShow-0>ListShowAll</LinkOptionListShow-0>
-      <LinkOptionOptimize-0>None</LinkOptionOptimize-0>
+      <LinkOptionOptimize-0>Speed</LinkOptionOptimize-0>
       <LinkOptionStack-0>True</LinkOptionStack-0>
-      <LinkOptionStart-0>SI,B_1,R_1,B_2,R_2,B,R/4,C_1,C_2,C,C$*,D*,W*,L,P/FFFF0000,EXCEPTVECT/FFFFFF80,RESETVECT/FFFFFFFC</LinkOptionStart-0>
+      <LinkOptionStart-0>SI,B_1,R_1,B_2,R_2,B,R/4,P*,C_1,C_2,C,C$*,D*,W*,L/FFFF0000,EXCEPTVECT/FFFFFF80,RESETVECT/FFFFFFFC</LinkOptionStart-0>
       <LinkOptionCompress-0>False</LinkOptionCompress-0>
       <LinkOptionCpuInformation-0 />
       <LinkOptionDebug-0>Debug</LinkOptionDebug-0>

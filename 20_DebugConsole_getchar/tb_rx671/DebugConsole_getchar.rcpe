@@ -153,6 +153,7 @@
           <Option>-listfile=%BuildModeName%</Option>
           <Option>-show=source</Option>
           <Option>-optimize=0</Option>
+          <Option>-goptimize</Option>
           <Option>-nologo</Option>
           <Option>-asmopt=-bank</Option>
         </CompileOptions>
@@ -166,14 +167,15 @@
           <Option>-nologo</Option>
           <Option>-bank</Option>
           <Option>-debug</Option>
+          <Option>-goptimize</Option>
         </AssembleOptions>
         <LinkOptions>
           <Option>-output=%BuildModeName%\%ProjectName%.abs</Option>
           <Option>-vect=_undefined_interrupt_source_isr</Option>
           <Option>-list=%BuildModeName%\%ProjectName%.map</Option>
           <Option>-show=all</Option>
-          <Option>-nooptimize</Option>
-          <Option>-start=SI,B_1,R_1,B_2,R_2,B,R,B_8,R_8/4,C_1,C_2,C,C_8,C$*,D*,W*,L,P*/FFE00000,EXCEPTVECT/FFFFFF80,RESETVECT/FFFFFFFC</Option>
+          <Option>-optimize=speed</Option>
+          <Option>-start=SI,B_1,R_1,B_2,R_2,B,R,B_8,R_8/4,P*,C_1,C_2,C,C_8,C$*,D*,W*,L/FFE00000,EXCEPTVECT/FFFFFF80,RESETVECT/FFFFFFFC</Option>
           <Option>-rom=D_8=R_8,D=R,D_2=R_2,D_1=R_1</Option>
           <Option>-stack</Option>
           <Option>-change_message=warning=2300,2142</Option>
